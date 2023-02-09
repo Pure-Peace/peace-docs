@@ -4,6 +4,8 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
+const EDIT_URL = 'https://github.com/pure-peace/peace-docs/edit/main/';
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'PEACE Docs',
@@ -23,6 +25,8 @@ const config = {
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+
+  stylesheets: ['fonts/fonts.css'],
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -58,12 +62,14 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
+          editUrl: EDIT_URL,
         },
         blog: {
           showReadingTime: true,
+          editUrl: EDIT_URL,
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: [require.resolve('./src/css/custom.css')],
         },
       }),
     ],
@@ -72,12 +78,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/peacev1.gif',
       navbar: {
-        title: 'PEACE Docs',
+        title: 'PEACE _',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'PEACE',
           src: 'img/logo.svg',
         },
         items: [
