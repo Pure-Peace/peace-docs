@@ -42,7 +42,6 @@ const config = {
     },
   },
   themes: [
-    // ... Your other themes.
     [
       // @ts-ignore
       require.resolve('@easyops-cn/docusaurus-search-local'),
@@ -69,7 +68,7 @@ const config = {
           editUrl: EDIT_URL,
         },
         theme: {
-          customCss: [require.resolve('./src/css/custom.css')],
+          customCss: [require.resolve('./src/styles/custom.css')],
         },
       }),
     ],
@@ -80,10 +79,11 @@ const config = {
     ({
       image: 'img/peacev1.gif',
       navbar: {
-        title: 'PEACE _',
+        title: 'PEACE',
         logo: {
           alt: 'PEACE',
           src: 'img/logo.svg',
+          srcDark: '/img/logo-dark.svg',
         },
         items: [
           {
@@ -102,9 +102,6 @@ const config = {
             position: 'right',
           },
         ],
-      },
-      footer: {
-        copyright: `Copyright © ${new Date().getFullYear()} PEACE Project.`,
       },
       prism: {
         theme: lightCodeTheme,

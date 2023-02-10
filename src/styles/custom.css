@@ -1,0 +1,73 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --logo-color: #00c38a;
+  --ifm-color-primary: #00ba84;
+  --ifm-color-primary-dark: #00a777;
+  --ifm-color-primary-darker: #009e70;
+  --ifm-color-primary-darkest: #00825c;
+  --ifm-color-primary-light: #00cd91;
+  --ifm-color-primary-lighter: #00d698;
+  --ifm-color-primary-lightest: #00f2ac;
+  --ifm-font-family-base: 'Poppins', 'SourceHanSansCN-Regular', 'system-ui',
+    '-apple-system', 'Segoe UI', 'Roboto', 'Ubuntu', 'Cantarell', 'Noto Sans',
+    'sans-serif', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial',
+    'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --ifm-code-font-size: 95%;
+  --ifm-footer-padding-vertical: 1rem;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --logo-color: #00ffb6;
+  --ifm-color-primary: #00ffb6;
+  --ifm-color-primary-dark: #00e6a4;
+  --ifm-color-primary-darker: #00d99b;
+  --ifm-color-primary-darkest: #00b37f;
+  --ifm-color-primary-light: #1affbd;
+  --ifm-color-primary-lighter: #26ffc1;
+  --ifm-color-primary-lightest: #4dffcc;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+html {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-smoothing: antialiased;
+}
+
+.navbar__logo {
+  height: 1.4rem;
+}
+
+.navbar__title {
+  font-size: 1.2rem;
+}
+
+.navbar__title::after {
+  padding: 0 0.5rem;
+  color: var(--logo-color);
+  content: '_';
+  font-size: 1.2rem;
+  font-weight: bolder;
+}
+
+.navbar__brand {
+  padding: 0 1rem;
+}
+
+.navbar__brand:hover {
+  color: currentColor;
+}
+
+.navbar__item {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
