@@ -1,15 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.css';
-
 
 export default function HomepageFeatures(): JSX.Element {
   return (
-    <section className={styles.features}>
+    <section>
       <div className="container">
-        <div className="row">
-          ASDF
-        </div>
+        <div className="row"></div>
       </div>
     </section>
   );

@@ -1,11 +1,9 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* You can override the default Infima variables here. */
 :root {
+  --tw-content: '';
   --logo-color: #00c38a;
   --ifm-color-primary: #00ba84;
   --ifm-color-primary-dark: #00a777;
@@ -18,13 +16,19 @@
     '-apple-system', 'Segoe UI', 'Roboto', 'Ubuntu', 'Cantarell', 'Noto Sans',
     'sans-serif', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial',
     'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --ifm-code-font-size: 95%;
-  --ifm-footer-padding-vertical: 1rem;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  --ifm-background-color: var(--ifm-color-gray-0);
+  --ifm-navbar-background-color: var(--ifm-background-color);
+  --ifm-footer-background-color: var(--ifm-background-color);
+  --ifm-link-hover-decoration: none;
+  --ifm-button-padding-horizontal: 1.5rem;
+  --ifm-button-padding-vertical: 0.75rem;
+  --ifm-pre-padding: 1.5rem;
+  --ifm-color-emphasis-50: #f9fafa;
+  --ifm-footer-padding-vertical: 3rem;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
+html[data-theme='dark'] {
   --logo-color: #00ffb6;
   --ifm-color-primary: #00ffb6;
   --ifm-color-primary-dark: #00e6a4;
@@ -33,9 +37,13 @@
   --ifm-color-primary-light: #1affbd;
   --ifm-color-primary-lighter: #26ffc1;
   --ifm-color-primary-lightest: #4dffcc;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --ifm-background-color: var(--ifm-color-gray-1000);
+  --ifm-color-emphasis-50: #151719;
+  --docsearch-searchbox-background: var(--ifm-color-gray-900) !important;
 }
 
+/* ----------------- override ----------------- */
 html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -43,11 +51,55 @@ html {
   font-smoothing: antialiased;
 }
 
+button,
+input,
+text {
+  font-family: var(--ifm-font-family-base);
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ----------------- navbar ----------------- */
+.navbar {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.navbar__inner {
+  padding: var(--ifm-navbar-padding-vertical)
+    var(--ifm-navbar-padding-horizontal);
+  backdrop-filter: blur(6px);
+  background-color: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme='dark'] .navbar__inner {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
 .navbar__logo {
   height: 1.4rem;
 }
 
+@media screen and (max-width: 996px) {
+  .navbar__brand {
+    flex: 1;
+    justify-content: center;
+    margin-right: 2rem;
+  }
+}
+
 .navbar__title {
+  flex-grow: 0;
   font-size: 1.2rem;
 }
 
@@ -70,4 +122,73 @@ html {
 .navbar__item {
   font-weight: bold;
   font-size: 0.9rem;
+}
+
+/* ----------------- menu ----------------- */
+.menu {
+  padding: 1rem !important;
+}
+
+.menu__link {
+  font-size: 0.9rem;
+}
+
+/* ----------------- footer ----------------- */
+.footer {
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  padding-bottom: 4rem;
+}
+
+.footer__bottom {
+  margin-top: 3rem;
+}
+
+@media screen and (max-width: 996px) {
+  .footer__links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ----------------- button ----------------- */
+.button {
+  font-size: calc(0.5rem + 0.5rem * var(--ifm-button-size-multiplier));
+}
+
+.button {
+  --ifm-button-size-multiplier: 1;
+}
+
+.button--lg {
+  --ifm-button-size-multiplier: 1.2;
+}
+
+.button--sm {
+  --ifm-button-size-multiplier: 0.8;
+}
+
+.button {
+  --ifm-button-color: var(--ifm-color-white);
+}
+
+.button--secondary {
+  --ifm-button-color: var(--ifm-color-black);
+}
+
+.gradient-border-2 {
+  border: 2px solid transparent;
+}
+
+.border-gradient-br-gradient-gray-900 {
+  background: linear-gradient(90deg, #18181b, #18181b),
+    linear-gradient(to bottom right, #00dc82, #36e4da, #16a79e);
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}
+
+.hover\:border-gradient-br-gradient-black:hover {
+  background: linear-gradient(90deg, #0c0c0d, #0c0c0d),
+    linear-gradient(to bottom right, #00dc82, #36e4da, #16a79e);
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
 }

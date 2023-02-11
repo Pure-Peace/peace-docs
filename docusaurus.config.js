@@ -8,12 +8,12 @@ const EDIT_URL = 'https://github.com/pure-peace/peace-docs/edit/main/';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'PEACE Docs',
-  tagline: 'Dinosaurs are cool',
+  title: 'PEACE',
+  tagline: 'The osu! server development framework',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://peace.osu.icu',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -25,8 +25,19 @@ const config = {
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
+  staticDirectories: ['static'],
 
   stylesheets: ['fonts/fonts.css'],
+
+  plugins: [
+    () => ({
+      name: 'postcss-tailwindcss-loader',
+      configurePostCss(postcssOptions) {
+        postcssOptions.plugins.unshift(require('tailwindcss'));
+        return postcssOptions;
+      },
+    }),
+  ],
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -86,20 +97,49 @@ const config = {
           srcDark: '/img/logo-dark.svg',
         },
         items: [
+          { to: '/docs', label: 'Docs' },
+          { to: '/blog', label: 'Blog' },
+          { type: 'docsVersionDropdown', position: 'right' },
+          { type: 'localeDropdown', position: 'right' },
+        ],
+      },
+      footer: {
+        copyright: `Copyright © ${new Date().getFullYear()} PEACE Project.`,
+        links: [
           {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Tutorial',
+            title: 'Docs',
+            items: [
+              {
+                label: 'Get Started',
+                to: '/docs',
+              },
+            ],
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
           {
-            type: 'docsVersionDropdown',
-            position: 'right',
+            title: 'Guide',
+            items: [],
           },
           {
-            type: 'localeDropdown',
-            position: 'right',
+            title: 'Community',
+            items: [
+              {
+                label: 'Discord',
+                href: 'https://discord.gg/6YKQMPpMrz',
+              },
+            ],
+          },
+          {
+            title: 'More',
+            items: [
+              {
+                label: 'Blog',
+                to: '/blog',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/pure-peace/peace',
+              },
+            ],
           },
         ],
       },
