@@ -135,11 +135,11 @@ so we need to prepare some ssl certificates before starting.
 :::
 
 ```bash title="linux or wsl"
-./ext/self_signed_certsgenerate.sh
+./ext/self_signed_certs/generate.sh
 ```
 
 ```bash title="windows"
-./ext/generate.bat
+./ext/self_signed_certs/generate.bat
 ```
 
 This will generate `cert.cer` and `key.pem` in the current directory.
@@ -152,7 +152,7 @@ windows guide: [installing-a-trusted-root-certificate](https://learn.microsoft.c
 ### Set hosts
 
 :::info
-We need to set some hosts for this machine,
+We need to set some hosts for local machine,
 this is to be able to use osu! `-devserver` flag to connect to the local development server.
 :::
 
