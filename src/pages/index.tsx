@@ -89,7 +89,7 @@ function HeaderActions() {
         )}
       >
         <Link
-          to="/docs"
+          to="/docs/guide"
           className={clsx(
             'tw-font-medium',
             'tw-text-sm',

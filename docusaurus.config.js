@@ -103,6 +103,10 @@ const config = {
           { type: 'localeDropdown', position: 'right' },
         ],
       },
+      colorMode: {
+        defaultMode: 'dark',
+        disableSwitch: false,
+      },
       footer: {
         copyright: `Copyright © ${new Date().getFullYear()} PEACE Project.`,
         links: [
