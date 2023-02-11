@@ -175,6 +175,39 @@ text {
   --ifm-button-color: var(--ifm-color-black);
 }
 
+/* ----------------- scrollbar ----------------- */
+::-webkit-scrollbar {
+  background-color: transparent;
+  height: 0.6em;
+  width: 0.6em;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  --tw-bg-opacity: 1;
+  background-color: #3f3f46;
+  background-color: rgb(63 63 70 / var(--tw-bg-opacity));
+}
+
+::-webkit-scrollbar-thumb {
+  --tw-bg-opacity: 1;
+  background-color: #d4d4d8;
+  background-color: rgb(212 212 216 / var(--tw-bg-opacity));
+  border-radius: 0.6em;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  --tw-bg-opacity: 1;
+  background-color: #27272a;
+  background-color: rgb(39 39 42 / var(--tw-bg-opacity));
+}
+
+::-webkit-scrollbar-track {
+  --tw-bg-opacity: 1;
+  background-color: #f4f4f5;
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity));
+}
+
+/* ----------------- custom ----------------- */
 .gradient-border-2 {
   border: 2px solid transparent;
 }
