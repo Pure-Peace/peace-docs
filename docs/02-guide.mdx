@@ -1,0 +1,348 @@
+---
+slug: /guide
+---
+
+# Guide
+
+You will start an osu! development server locally in minutes.
+
+## Install Rust
+
+```bash title="linux or wsl"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+windows guide:
+
+https://www.rust-lang.org/learn/get-started
+
+## Clone from github
+
+```bash
+git clone https://github.com/Pure-Peace/peace
+cd peace
+```
+
+---
+
+## Prepare startup
+
+### A Database
+
+:::info
+Peace needs a **database** to store data such as user accounts, beatmaps, and scores.
+
+There are currently three databases to choose from:
+
+- [**PostgreSQL**](https://www.postgresql.org/) (recommended)
+
+- [**MySQL**](https://www.mysql.com/)
+
+- [**Sqlite**](https://sqlite.org/) (only local servers are recommended).
+
+:::
+
+After choosing and installing a database, you need to create a database:
+
+```mdx-code-block
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="PostgreSQL">
+```
+
+1. Log into PostgreSQL:
+
+```bash
+psql -U <username>
+```
+
+2. Create database:
+
+```bash
+CREATE DATABASE peace;
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="MySQL">
+```
+
+1. Log into MySQL:
+
+```bash
+mysql -u <username>
+```
+
+2. Create database:
+
+```bash
+CREATE DATABASE peace;
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Sqlite">
+```
+
+1. Just create a new empty file `peace` in the peace project directory.
+
+```bash title="linux or wsl"
+cd peace
+vim peace
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+:::note
+Now, we can initialize the database with `db-peace-migrate`,
+which will create the table structure and some basic data:
+
+```bash
+cargo run --bin db-peace-migrate up -u <postgresql|mysql|sqlite>://<username>:<password>@<address>:<port>/peace
+```
+
+:::
+
+Take PostgreSQL as an example:
+
+```bash
+cargo run --bin db-peace-migrate up -u postgresql://postgres:123456@localhost:5432/peace
+```
+
+:::tip
+If you want to clear the test data, you can use the `db-peace-migrate down` subcommand, or delete the database directly `DROP DATABASE peace;`.
+
+If you changed your database structure, generate new database entities with:
+
+```bash
+cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost:5432/peace -o frame/dal/src/db/peace/entity
+```
+
+:::
+
+---
+
+### Generate test ssl certificate
+
+:::info
+The osu client will use https to connect to the server,
+so we need to prepare some ssl certificates before starting.
+:::
+
+```bash title="linux or wsl"
+./ext/self_signed_certsgenerate.sh
+```
+
+```bash title="windows"
+./ext/generate.bat
+```
+
+This will generate `cert.cer` and `key.pem` in the current directory.
+After that, we need to install the certificate to local machine.
+
+windows guide: [installing-a-trusted-root-certificate](https://learn.microsoft.com/en-us/skype-sdk/sdn/articles/installing-the-trusted-root-certificate)
+
+---
+
+### Set hosts
+
+:::info
+We need to set some hosts for this machine,
+this is to be able to use osu! `-devserver` flag to connect to the local development server.
+:::
+
+Edit hosts file
+
+```bash title="linux or wsl"
+sudo vim /etc/hosts
+```
+
+```bash title="windows"
+C:\Windows\System32\drivers\etc\hosts
+```
+
+Add contents
+
+```bash title="hosts"
+# Add
+127.0.0.1 osu.peace.local
+127.0.0.1 c.peace.local
+127.0.0.1 a.peace.local
+127.0.0.1 peace.local
+127.0.0.1 ce.peace.local
+127.0.0.1 c1.peace.local
+127.0.0.1 c2.peace.local
+127.0.0.1 c3.peace.local
+127.0.0.1 c4.peace.local
+127.0.0.1 c5.peace.local
+127.0.0.1 c6.peace.local
+127.0.0.1 s.peace.local
+127.0.0.1 i.peace.local
+```
+
+---
+
+### Create a shortcut to `osu!.exe`
+
+Finally, we need to create a shortcut to `osu!.exe` and set the target to:
+
+```
+<your osu path>\osu!.exe -devserver peace.local
+```
+
+Once we are ready, we proceed to start the local server.
+
+---
+
+## Startup
+
+### Start gateway
+
+:::info
+The **gateway** is a stateless http(s) service,
+it will directly receive and process requests from osu! clients,
+you can customize it and specify different processing functions for different uris.
+:::
+
+```bash title="Start gateway server"
+cargo run --bin gateway-server -- --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect
+```
+
+Now we can see some information, which means the startup is successful:
+
+```bash
+    Finished dev [unoptimized + debuginfo] target(s) in 0.41s
+     Running `target\debug\gateway-server.exe --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect`
+2023-02-11T16:09:03.400220Z  INFO peace_gateway: bancho_rpc gRPC service: http://127.0.0.1:50051
+2023-02-11T16:09:03.405255Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui/
+2023-02-11T16:09:03.405347Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
+2023-02-11T16:09:03.405842Z  INFO peace_api::components::http::tls: >> Force https enabled
+2023-02-11T16:09:03.406044Z  INFO peace_api::components::http::tls: >> [HTTP SERVER] (only redirect http to https) listening on: http://127.0.0.1:8000
+2023-02-11T16:09:03.417664Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
+```
+
+:::tip
+Now we can access swagger ui via https://127.0.0.1:443/swagger-ui/.
+
+Since we passed in a `--admin-endpoints` flags,
+there are some APIs available to the administrator (such as dynamically changing the log levels, etc.).
+
+By default, the server will try to connect to the `bancho` service when it starts,
+passing `--bancho-rpc-lazy-connect` flags will make the server not connect to `bancho` at startup.
+:::
+
+:::caution
+In the production environment, please do not directly expose the service with the administrator api,
+or pass `--admin-token <ADMIN_TOKEN>` to set a token for the administrator api.
+:::
+
+**View all available flags:**
+
+```bash
+cargo run --bin gateway-server -- --help
+```
+
+---
+
+### Start bancho state service
+
+:::info
+The **bancho-state** is a stateful gRPC service that provides the ability to store bancho server state,
+user sessions, bancho packets in memory, and provide rpc resources to other services.
+:::
+
+In fact, `bancho-state` should be considered as the state singleton of `bancho`.
+We can deploy multiple `bancho` services in different geographical locations,
+and connect them to the same `bancho-state` service through the intranet to complete the distributed deployment and improve the user's network experience.
+
+Moreover, the server design of data and logic separation allows us to modify the logic of the game server at any time without causing loss of user sessions,
+multiplayer games, and data packets, and does not require a real "restart" of the entire server.
+
+```bash title="Start bancho state server"
+cargo run --bin bancho-state-server -- --rpc-addr 127.0.0.1:12345 --rpc-reflection --rpc-admin-endpoints
+```
+
+Now we can see some information, which means the startup is successful:
+
+```bash
+    Finished dev [unoptimized + debuginfo] target(s) in 0.39s
+     Running `target\debug\bancho-state-server.exe --rpc-addr 127.0.0.1:12345 --rpc-reflection --rpc-admin-endpoints`
+2023-02-11T16:37:06.060012Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:12345
+```
+
+:::tip
+Since `--grpc-reflection` flags are passed in,
+the server will provide gRPC reflection services,
+you can get a list of rpc functions provided by this service through network requests or debugging tools such as postman,
+which is convenient for debugging and calling services.
+
+The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
+:::
+
+:::caution
+In the production environment, please do not directly expose the gRPC service,
+and pass `--rpc-admin-token <ADMIN_TOKEN>` to set a token for the administrator rpc functions.
+:::
+
+**View all available flags:**
+
+```bash
+cargo run --bin bancho-state-server -- --help
+```
+
+---
+
+### Start bancho logic service
+
+:::info
+The **bancho** is a stateless gRPC service that contains the logic of the bancho server.
+You can customize the logic of the server according to your needs.
+Additionally, it requires a `bancho-state` service to store and process server state.
+:::
+
+```bash title="Start bancho logic service"
+cargo run --bin bancho-server -- --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints
+```
+
+Now we can see some information, which means the startup is successful:
+
+```bash
+    Finished dev [unoptimized + debuginfo] target(s) in 0.40s
+     Running `target\debug\bancho-server.exe --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints`
+2023-02-11T17:09:50.122358Z  INFO bancho: bancho_state_rpc gRPC service: http://127.0.0.1:12345
+2023-02-11T17:09:50.146280Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:50051
+```
+
+:::tip
+Since `--grpc-reflection` flags are passed in,
+the server will provide gRPC reflection services,
+you can get a list of rpc functions provided by this service through network requests or debugging tools such as postman,
+which is convenient for debugging and calling services.
+
+The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
+
+By default, the server will try to connect to the `bancho-state` service when it starts,
+passing `--bancho-state-rpc-lazy-connect` flags will make the server not connect to `bancho-state` at startup.
+:::
+
+:::caution
+In the production environment, please do not directly expose the gRPC service,
+and pass `--rpc-admin-token <ADMIN_TOKEN>` to set a token for the administrator rpc functions.
+:::
+
+**View all available flags:**
+
+```bash
+cargo run --bin bancho-state-server -- --help
+```
+
+---
+
+## Run osu! through the created shortcut
+
+You have started the PEACE development server locally and can connect via the osu! client, congratulations!
