@@ -2,8 +2,3 @@
   font-family: Poppins;
   src: url(./Poppins-Regular.ttf) format('truetype');
 }
-
-@font-face {
-  font-family: 'SourceHanSansCN-Regular';
-  src: url(./SourceHanSansCN-Regular.ttf) format('truetype');
-}
