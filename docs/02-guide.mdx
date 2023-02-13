@@ -210,14 +210,14 @@ you can customize it and specify different processing functions for different ur
 :::
 
 ```bash title="Start gateway server"
-cargo run --bin gateway-server -- --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect
+cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect
 ```
 
 Now we can see some information, which means the startup is successful:
 
 ```bash
     Finished dev [unoptimized + debuginfo] target(s) in 0.41s
-     Running `target\debug\gateway-server.exe --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect`
+     Running `target\debug\gateway-server.exe --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect`
 2023-02-11T16:09:03.400220Z  INFO peace_gateway: bancho_rpc gRPC service: http://127.0.0.1:50051
 2023-02-11T16:09:03.405255Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui/
 2023-02-11T16:09:03.405347Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
@@ -228,6 +228,9 @@ Now we can see some information, which means the startup is successful:
 
 :::tip
 Now we can access swagger ui via https://127.0.0.1:443/swagger-ui/.
+
+After setting `--log-env-filter=tower_http=debug`,
+the server will print information when receiving a request.
 
 Since we passed in a `--admin-endpoints` flags,
 there are some APIs available to the administrator (such as dynamically changing the log levels, etc.).
