@@ -130,22 +130,45 @@ cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost
 ### Generate test ssl certificate
 
 :::info
-The osu client will use https to connect to the server,
+The osu! client will use https to connect to the server,
 so we need to prepare some ssl certificates before starting.
 :::
 
-```bash title="linux or wsl"
+```mdx-code-block
+<Tabs>
+<TabItem value="Linux or Wsl">
+```
+
+```bash title="Generate cert with openssl"
 ./ext/self_signed_certs/generate.sh
 ```
 
-```bash title="windows"
+```mdx-code-block
+</TabItem>
+<TabItem value="Windows">
+```
+
+1. Download and install openssl: https://slproweb.com/products/Win32OpenSSL.html
+
+2. Add the directory of the `openssl.exe` to the environment variable `path`.
+
+```bash title="Generate cert with openssl"
 ./ext/self_signed_certs/generate.bat
 ```
 
-This will generate `cert.cer` and `key.pem` in the current directory.
-After that, we need to install the certificate to local machine.
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
 
-windows guide: [installing-a-trusted-root-certificate](https://learn.microsoft.com/en-us/skype-sdk/sdn/articles/installing-the-trusted-root-certificate)
+This will generate `cert.cer` and `key.pem` in the current directory.
+
+**Install ssl certificate (optional)**
+
+If you want to start osu! on your local machine and connect to the peace server, you need to install this certificate -> `cert.cer`.
+
+Windows guide: [installing-a-trusted-root-certificate](https://learn.microsoft.com/en-us/skype-sdk/sdn/articles/installing-the-trusted-root-certificate)
+(or double-click `cert.cer`, then install the certificate to the **Trusted Root Certification Authorities store**)
 
 ---
 
