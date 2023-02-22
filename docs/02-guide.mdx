@@ -338,8 +338,13 @@ Additionally, it requires a `bancho-state` service to store and process server s
 :::
 
 ```bash title="Start bancho logic service"
-cargo run --bin bancho-server -- --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints
+cargo run --bin bancho-server -- --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints --peace-db-url postgresql://postgres:123456@localhost:5432/peace
 ```
+
+:::note
+`--peace-db-url`
+You should set --peace-db-url to your database url! We have talked about it in the previous steps.
+:::
 
 Now we can see some information, which means the startup is successful:
 
