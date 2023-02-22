@@ -239,7 +239,7 @@ you can customize it and specify different processing functions for different ur
 :::
 
 ```bash title="Start gateway server"
-cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect
+cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect --bancho-state-rpc-lazy-connect
 ```
 
 Now we can see some information, which means the startup is successful:
