@@ -126,7 +126,7 @@ cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost
 We can create a test user like:
 
 ```bash
-cargo run --bin db-peace-cli create-peace-user -u postgresql://postgres:123456@localhost:5432/peace --username test --password test --email test@email.com
+cargo run --bin db-peace-cli create-user -u postgresql://postgres:123456@localhost:5432/peace --username test --raw-password test --email test@emfail.com
 ```
 
 :::
@@ -342,8 +342,7 @@ cargo run --bin bancho-server -- --bancho-state-rpc-uri http://127.0.0.1:12345 -
 ```
 
 :::note
-`--peace-db-url`
-You should set --peace-db-url to your database url! We have talked about it in the previous steps.
+You should set `--peace-db-url` to your own database url! We have talked about it in the previous steps.
 :::
 
 Now we can see some information, which means the startup is successful:
