@@ -7,6 +7,11 @@ slug: /executable-file-flags
 ## gateway
 
 ```bash
+cargo run --bin gateway-server -- --help
+```
+
+
+```bash
 Peace Gateway Service
 
 Usage: gateway-server.exe [OPTIONS] [COMMAND]
@@ -132,6 +137,25 @@ Options:
       --bancho-rpc-lazy-connect
           Not attempt to connect to the endpoint until first use
 
+      --bancho-state-rpc-uri <BANCHO_STATE_RPC_URI>
+          Service uri
+
+          [default: http://127.0.0.1:12345]
+
+      --bancho-state-rpc-uds <BANCHO_STATE_RPC_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --bancho-state-rpc-tls
+          Enable `tls` connection
+
+      --bancho-state-rpc-ssl-cert <BANCHO_STATE_RPC_SSL_CERT>
+          SSL certificate path
+
+      --bancho-state-rpc-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
   -h, --help
           Print help information (use `-h` for a summary)
 
@@ -142,6 +166,11 @@ Options:
 ---
 
 ## bancho
+
+```bash
+cargo run --bin bancho-server -- --help
+```
+
 
 ```bash
 Peace bancho logic service
@@ -280,6 +309,48 @@ Options:
       --rpc-tcp-keepalive <RPC_TCP_KEEPALIVE>
           Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
 
+      --peace-db-url <PEACE_DB_URL>
+          Database connection URL
+
+          [default: protocol://username:password@host/database]
+
+      --peace-db-max-connections <PEACE_DB_MAX_CONNECTIONS>
+          Set the maximum number of connections of the pool
+
+      --peace-db-min-connections <PEACE_DB_MIN_CONNECTIONS>
+          Set the minimum number of connections of the pool
+
+      --peace-db-connect-timeout <PEACE_DB_CONNECT_TIMEOUT>
+          Set the timeout duration when acquiring a connection
+
+      --peace-db-acquire-timeout <PEACE_DB_ACQUIRE_TIMEOUT>
+          Set the maximum amount of time to spend waiting for acquiring a connection
+
+      --peace-db-idle-timeout <PEACE_DB_IDLE_TIMEOUT>
+          Set the idle duration before closing a connection
+
+      --peace-db-max-lifetime <PEACE_DB_MAX_LIFETIME>
+          Set the maximum lifetime of individual connections
+
+      --peace-db-sqlx-logging
+          Enable SQLx statement logging (default true)
+
+      --peace-db-sqlx-logging-level <PEACE_DB_SQLX_LOGGING_LEVEL>
+          Set SQLx statement logging level (default [`LogLevel::Info`]) (ignored if `sqlx_logging` is false)
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+      --peace-db-set-schema-search-path <PEACE_DB_SET_SCHEMA_SEARCH_PATH>
+          Set schema search path (PostgreSQL only)
+
       --bancho-state-rpc-uri <BANCHO_STATE_RPC_URI>
           Service uri
 
@@ -309,6 +380,11 @@ Options:
 ---
 
 ## bancho-state
+
+```bash
+cargo run --bin bancho-state-server -- --help
+```
+
 
 ```bash
 Peace bancho state service
@@ -459,6 +535,11 @@ Options:
 ## db-peace-migrate
 
 ```bash
+cargo run --bin db-peace-migrate -- --help
+```
+
+
+```bash
 USAGE:
     db-peace-migrate.exe [OPTIONS] [SUBCOMMAND]
 
@@ -509,6 +590,11 @@ SUBCOMMANDS:
 ## db-cli
 
 ```bash
+cargo run --bin db-cli -- --help
+```
+
+
+```bash
 USAGE:
     db-cli.exe [OPTIONS] <SUBCOMMAND>
 
@@ -522,3 +608,25 @@ SUBCOMMANDS:
     help        Print this message or the help of the given subcommand(s)
     migrate     Migration related commands
 ```
+
+## db-peace-cli
+
+```bash
+cargo run --bin db-peace-cli -- --help
+```
+
+
+```bash
+Peace db CLI
+
+Usage: db-peace-cli.exe <COMMAND>
+
+Commands:
+  create-peace-user  [peace] Create a new peace user in database
+  help               Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help information
+  -V, --version  Print version information
+```
+
