@@ -230,6 +230,13 @@ Once we are ready, we proceed to start the local server.
 
 ## Startup
 
+**PEACE** is a development framework that offers flexible service combinations, so you can choose how to run the services:
+
+1. Multi-service deployment (can be deployed in a distributed environment, but requires starting multiple services)
+2. Standalone instance (lightweight and can be played on a single machine)
+
+## Multi-service deployment
+
 ### Start gateway
 
 :::info
@@ -379,6 +386,14 @@ cargo run --bin bancho-state-server -- --help
 
 ---
 
+## Standalone Bancho instance
+
+```bash title="Start bancho standalone server"
+cargo run --bin bancho-standalone-server -- --log-env-filter=tower_http=debug --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url postgresql://postgres:123456@localhost:5432/peace
+```
+
+---
+
 ## Run osu! through the created shortcut
 
-You have started the PEACE development server locally and can connect via the osu! client, congratulations!
+You have started the **PEACE** development server locally and can connect via the osu! client, congratulations!
