@@ -27,7 +27,7 @@ cd peace
 
 ## Prepare startup
 
-### A Database
+### 1. A Database
 
 :::info
 Peace needs a **database** to store data such as user accounts, beatmaps, and scores.
@@ -86,11 +86,17 @@ CREATE DATABASE peace;
 <TabItem value="Sqlite">
 ```
 
-1. Just create a new empty file `peace` in the peace project directory.
+1. Create a new empty file `peace.db` in the peace project directory.
 
 ```bash title="linux or wsl"
 cd peace
-vim peace
+vim peace.db
+```
+
+2. Work with peace (Example):
+
+```
+--peace-db-url sqlite://peace.db
 ```
 
 ```mdx-code-block
@@ -133,7 +139,7 @@ cargo run --bin db-peace-cli create-user -u postgresql://postgres:123456@localho
 
 ---
 
-### Generate test ssl certificate
+### 2. Generate test ssl certificate
 
 :::info
 The osu! client will use https to connect to the server,
@@ -178,7 +184,7 @@ Windows guide: [installing-a-trusted-root-certificate](https://learn.microsoft.c
 
 ---
 
-### Set hosts
+### 3. Set hosts
 
 :::info
 We need to set some hosts for local machine,
@@ -216,7 +222,7 @@ Add contents
 
 ---
 
-### Create a shortcut to `osu!.exe`
+### 4. Create a shortcut to `osu!.exe`
 
 Finally, we need to create a shortcut to `osu!.exe` and set the target to:
 
@@ -237,9 +243,42 @@ Once we are ready, we proceed to start the local server.
 
 ---
 
-## Multi-service deployment
+## 1. Multi-service deployment
 
-### Start gateway
+### 1. Install protoc - The Protocol Buffer Compiler
+
+:::info
+The multi-service deployment of Peace is a distributed architecture that consists of multiple services.
+These services communicate with each other using **gRPC**,
+so it requires the installation of `protoc` compiler to compile `.proto` files.
+
+:::
+
+The easiest way to install `protoc` is to download the latest release zip file from
+[github.com/google/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases),
+extract it, and then add the directory containing the binary files to your environment variable.
+
+```bash title="Linux example"
+curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip
+unzip protoc-3.15.8-linux-x86_64.zip -d $HOME/.local
+export PATH="$PATH:$HOME/.local/bin"
+protoc --version
+```
+
+:::note
+Peace only supports **protoc v3.14** and above,
+so please make sure to check the version of protoc you have installed using `protoc --version`.
+
+:::
+
+Reference links:
+
+- https://grpc.io/docs/protoc-installation/#install-pre-compiled-binaries-any-os
+- https://github.com/protocolbuffers/protobuf/releases
+
+---
+
+### 2. Start http gateway
 
 :::info
 The **gateway** is a stateless http(s) service,
@@ -290,7 +329,7 @@ cargo run --bin gateway-server -- --help
 
 ---
 
-### Start bancho state service
+### 3. Start bancho state service
 
 :::info
 The **bancho-state** is a stateful gRPC service that provides the ability to store bancho server state,
@@ -338,7 +377,7 @@ cargo run --bin bancho-state-server -- --help
 
 ---
 
-### Start bancho logic service
+### 4. Start bancho logic service
 
 :::info
 The **bancho** is a stateless gRPC service that contains the logic of the bancho server.
@@ -388,7 +427,7 @@ cargo run --bin bancho-state-server -- --help
 
 ---
 
-## Standalone Bancho instance
+## 2. Standalone Bancho instance
 
 If you wish to run a standalone instance, please refer to the following commands:
 
