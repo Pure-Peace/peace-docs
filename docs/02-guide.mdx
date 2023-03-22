@@ -126,7 +126,7 @@ If you want to clear the test data, you can use the `db-peace-migrate down` subc
 If you changed your database structure, generate new database entities with:
 
 ```bash
-cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost:5432/peace -o frame/db/src/peace/entity
+cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost:5432/peace -o core/db/src/peace/entity
 ```
 
 We can create a test user like:
