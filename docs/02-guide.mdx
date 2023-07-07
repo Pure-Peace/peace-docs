@@ -434,7 +434,8 @@ If it cannot connect, an internal `signature` service will be started within the
 and an ED25519 private key will be generated for signing.
 
 - Specify the URI for the `signature` service: `--signature-uri` (default is `http://127.0.0.1:5014`)
-  :::
+
+:::
 
 **View all available flags:**
 
@@ -499,7 +500,7 @@ which is convenient for debugging and calling services.
 The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
 
 By default, the server will try to connect to the `bancho-state` and `chat` services when it starts,
-passing `--<service>-lazy-connect` flags will make the server not connect to <service> at startup.
+passing `--<service>-lazy-connect` flags will make the server not connect to `<service>` at startup.
 :::
 
 :::caution
