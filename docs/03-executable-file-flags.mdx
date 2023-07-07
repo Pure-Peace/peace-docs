@@ -10,9 +10,8 @@ slug: /executable-file-flags
 cargo run --bin gateway-server -- --help
 ```
 
-
 ```bash
-Peace Gateway Service
+PEACE Gateway service
 
 Usage: gateway-server.exe [OPTIONS] [COMMAND]
 
@@ -28,10 +27,77 @@ Options:
   -c, --config <PATH>
           Configuration file path (Support `.yml`, `.json`, `toml`)
 
-          [default: config.json]
-
-      --save-as-config
+      --save-cfg
           Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
 
   -L, --log-level <LOG_LEVEL>
           Logging level
@@ -111,56 +177,78 @@ Options:
       --swagger-path <SWAGGER_PATH>
           The `swagger ui` base uri path
 
-          [default: /swagger-ui/]
+          [default: /swagger-ui]
 
       --openapi-json <OPENAPI_JSON>
           The `openapi.json` uri path
 
           [default: /api-doc/openapi.json]
 
-      --bancho-rpc-uri <BANCHO_RPC_URI>
+      --bancho-uri <BANCHO_URI>
           Service uri
 
-          [default: http://127.0.0.1:50051]
+          [default: http://127.0.0.1:5010]
 
-      --bancho-rpc-uds <BANCHO_RPC_UDS>
+      --bancho-uds <BANCHO_UDS>
           Service unix domain socket path. Only for unix systems.
 
           `uds` will be preferred over `uri`.
 
-      --bancho-rpc-tls
+      --bancho-tls
           Enable `tls` connection
 
-      --bancho-rpc-ssl-cert <BANCHO_RPC_SSL_CERT>
+      --bancho-ssl-cert <BANCHO_SSL_CERT>
           SSL certificate path
 
-      --bancho-rpc-lazy-connect
+      --bancho-lazy-connect
           Not attempt to connect to the endpoint until first use
 
-      --bancho-state-rpc-uri <BANCHO_STATE_RPC_URI>
+      --bancho-state-uri <BANCHO_STATE_URI>
           Service uri
 
-          [default: http://127.0.0.1:12345]
+          [default: http://127.0.0.1:5011]
 
-      --bancho-state-rpc-uds <BANCHO_STATE_RPC_UDS>
+      --bancho-state-uds <BANCHO_STATE_UDS>
           Service unix domain socket path. Only for unix systems.
 
           `uds` will be preferred over `uri`.
 
-      --bancho-state-rpc-tls
+      --bancho-state-tls
           Enable `tls` connection
 
-      --bancho-state-rpc-ssl-cert <BANCHO_STATE_RPC_SSL_CERT>
+      --bancho-state-ssl-cert <BANCHO_STATE_SSL_CERT>
           SSL certificate path
 
-      --bancho-state-rpc-lazy-connect
+      --bancho-state-lazy-connect
           Not attempt to connect to the endpoint until first use
+
+      --chat-uri <CHAT_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5012]
+
+      --chat-uds <CHAT_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --chat-tls
+          Enable `tls` connection
+
+      --chat-ssl-cert <CHAT_SSL_CERT>
+          SSL certificate path
+
+      --chat-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+      --debug-endpoints
+
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
   -V, --version
-          Print version information
+          Print version
 ```
 
 ---
@@ -171,9 +259,8 @@ Options:
 cargo run --bin bancho-server -- --help
 ```
 
-
 ```bash
-Peace bancho logic service
+PEACE Bancho gRPC service
 
 Usage: bancho-server.exe [OPTIONS] [COMMAND]
 
@@ -189,10 +276,77 @@ Options:
   -c, --config <PATH>
           Configuration file path (Support `.yml`, `.json`, `toml`)
 
-          [default: config.json]
-
-      --save-as-config
+      --save-cfg
           Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
 
   -L, --log-level <LOG_LEVEL>
           Logging level
@@ -216,7 +370,7 @@ Options:
   -H, --rpc-addr <RPC_ADDR>
           The address and port the `gRPC` server listens on
 
-          [default: 127.0.0.1:50051]
+          [default: 127.0.0.1:5010]
 
       --rpc-uds <RPC_UDS>
           Using unix domain socket instead of TCP/IP socket. Only for unix systems.
@@ -333,7 +487,7 @@ Options:
           Set the maximum lifetime of individual connections
 
       --peace-db-sqlx-logging
-          Enable SQLx statement logging (default true)
+          Enable SQLx statement logging
 
       --peace-db-sqlx-logging-level <PEACE_DB_SQLX_LOGGING_LEVEL>
           Set SQLx statement logging level (default [`LogLevel::Info`]) (ignored if `sqlx_logging` is false)
@@ -351,30 +505,77 @@ Options:
       --peace-db-set-schema-search-path <PEACE_DB_SET_SCHEMA_SEARCH_PATH>
           Set schema search path (PostgreSQL only)
 
-      --bancho-state-rpc-uri <BANCHO_STATE_RPC_URI>
+      --bancho-state-uri <BANCHO_STATE_URI>
           Service uri
 
-          [default: http://127.0.0.1:50051]
+          [default: http://127.0.0.1:5011]
 
-      --bancho-state-rpc-uds <BANCHO_STATE_RPC_UDS>
+      --bancho-state-uds <BANCHO_STATE_UDS>
           Service unix domain socket path. Only for unix systems.
 
           `uds` will be preferred over `uri`.
 
-      --bancho-state-rpc-tls
+      --bancho-state-tls
           Enable `tls` connection
 
-      --bancho-state-rpc-ssl-cert <BANCHO_STATE_RPC_SSL_CERT>
+      --bancho-state-ssl-cert <BANCHO_STATE_SSL_CERT>
           SSL certificate path
 
-      --bancho-state-rpc-lazy-connect
+      --bancho-state-lazy-connect
           Not attempt to connect to the endpoint until first use
 
+      --geoip-uri <GEOIP_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5013]
+
+      --geoip-uds <GEOIP_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --geoip-tls
+          Enable `tls` connection
+
+      --geoip-ssl-cert <GEOIP_SSL_CERT>
+          SSL certificate path
+
+      --geoip-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+      --chat-uri <CHAT_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5012]
+
+      --chat-uds <CHAT_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --chat-tls
+          Enable `tls` connection
+
+      --chat-ssl-cert <CHAT_SSL_CERT>
+          SSL certificate path
+
+      --chat-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+      --password-caches-recycle-deactive-secs <PASSWORD_CACHES_RECYCLE_DEACTIVE_SECS>
+          [default: 86400]
+
+      --password-caches-recycle-interval-secs <PASSWORD_CACHES_RECYCLE_INTERVAL_SECS>
+          [default: 43200]
+
+  -P, --geo-db-path <GEO_DB_PATH>
+
+
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
   -V, --version
-          Print version information
+          Print version
 ```
 
 ---
@@ -385,9 +586,8 @@ Options:
 cargo run --bin bancho-state-server -- --help
 ```
 
-
 ```bash
-Peace bancho state service
+BanchoState gRPC service
 
 Usage: bancho-state-server.exe [OPTIONS] [COMMAND]
 
@@ -403,10 +603,77 @@ Options:
   -c, --config <PATH>
           Configuration file path (Support `.yml`, `.json`, `toml`)
 
-          [default: config.json]
-
-      --save-as-config
+      --save-cfg
           Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
 
   -L, --log-level <LOG_LEVEL>
           Logging level
@@ -430,7 +697,7 @@ Options:
   -H, --rpc-addr <RPC_ADDR>
           The address and port the `gRPC` server listens on
 
-          [default: 127.0.0.1:50051]
+          [default: 127.0.0.1:5010]
 
       --rpc-uds <RPC_UDS>
           Using unix domain socket instead of TCP/IP socket. Only for unix systems.
@@ -523,11 +790,766 @@ Options:
       --rpc-tcp-keepalive <RPC_TCP_KEEPALIVE>
           Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
 
+      --user-sessions-recycle-deactive-secs <USER_SESSIONS_RECYCLE_DEACTIVE_SECS>
+          [default: 180]
+
+      --user-sessions-recycle-interval-secs <USER_SESSIONS_RECYCLE_INTERVAL_SECS>
+          [default: 180]
+
+      --notify-messages-recycle-interval-secs <NOTIFY_MESSAGES_RECYCLE_INTERVAL_SECS>
+          [default: 300]
+
+      --signature-uri <SIGNATURE_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5014]
+
+      --signature-uds <SIGNATURE_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --signature-tls
+          Enable `tls` connection
+
+      --signature-ssl-cert <SIGNATURE_SSL_CERT>
+          SSL certificate path
+
+      --signature-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+      --ed25519-private-key-path <ED25519_PRIVATE_KEY_PATH>
+
+
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
   -V, --version
-          Print version information
+          Print version
+```
+
+---
+
+## chat
+
+```bash
+cargo run --bin chat-server -- --help
+```
+
+```bash
+PEACE Chat gRPC service
+
+Usage: chat-server.exe [OPTIONS] [COMMAND]
+
+Commands:
+  run
+          Start service
+  create-config
+          Create default configuration file
+  help
+          Print this message or the help of the given subcommand(s)
+
+Options:
+  -c, --config <PATH>
+          Configuration file path (Support `.yml`, `.json`, `toml`)
+
+      --save-cfg
+          Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
+
+  -L, --log-level <LOG_LEVEL>
+          Logging level
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+  -F, --log-env-filter <LOG_ENV_FILTER>
+          Logging env filter
+
+  -d, --debug
+          Turning on debug will display information such as code line number, source file, thread id, etc
+
+  -H, --rpc-addr <RPC_ADDR>
+          The address and port the `gRPC` server listens on
+
+          [default: 127.0.0.1:5010]
+
+      --rpc-uds <RPC_UDS>
+          Using unix domain socket instead of TCP/IP socket. Only for unix systems.
+
+          If configured, `uds` will be preferred over `addr`.
+
+  -A, --rpc-admin-endpoints
+          Enable admin rpc service
+
+  -T, --rpc-admin-token <RPC_ADMIN_TOKEN>
+          Admin rpc service `Authorization` `Bearer` token
+
+  -R, --rpc-reflection
+          Enable reflection service
+
+  -r, --rpc-accept-http1
+          Allow this server to accept http1 requests.
+
+          Accepting http1 requests is only useful when developing grpc-web enabled services. If this setting is set to true but services are not correctly configured to handle grpc-web requests, your server may return confusing (but correct) protocol errors.
+
+          Default is false.
+
+      --rpc-concurrency-limit-per-connection <RPC_CONCURRENCY_LIMIT_PER_CONNECTION>
+          Set the concurrency limit applied to on requests inbound per connection
+
+      --rpc-http2-adaptive-window <RPC_HTTP2_ADAPTIVE_WINDOW>
+          Sets whether to use an adaptive flow control. Defaults to false. Enabling this will override the limits set in http2_initial_stream_window_size and http2_initial_connection_window_size
+
+          [possible values: true, false]
+
+      --rpc-http2-keepalive-interval <RPC_HTTP2_KEEPALIVE_INTERVAL>
+          Set whether HTTP2 Ping frames are enabled on accepted connections.
+
+          If None is specified, HTTP2 keepalive is disabled, otherwise the duration specified will be the time interval between HTTP2 Ping frames. The timeout for receiving an acknowledgement of the keepalive ping can be set with Server::http2_keepalive_timeout.
+
+          Default is no HTTP2 keepalive (None)
+
+      --rpc-http2-keepalive-timeout <RPC_HTTP2_KEEPALIVE_TIMEOUT>
+          Sets a timeout for receiving an acknowledgement of the keepalive ping.
+
+          If the ping is not acknowledged within the timeout, the connection will be closed. Does nothing if http2_keep_alive_interval is disabled.
+
+          Default is 20 seconds.
+
+          [default: 20]
+
+      --rpc-initial-connection-window-size <RPC_INITIAL_CONNECTION_WINDOW_SIZE>
+          Sets the max connection-level flow control for HTTP2
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-initial-stream-window-size <RPC_INITIAL_STREAM_WINDOW_SIZE>
+          Sets the SETTINGS_INITIAL_WINDOW_SIZE option for HTTP2 stream-level flow control.
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-max-concurrent-streams <RPC_MAX_CONCURRENT_STREAMS>
+          Sets the SETTINGS_MAX_CONCURRENT_STREAMS option for HTTP2 connections.
+
+          Default is no limit (None).
+
+      --rpc-max-frame-size <RPC_MAX_FRAME_SIZE>
+          Sets the maximum frame size to use for HTTP2.
+
+          Passing None will do nothing.
+
+          If not set, will default from underlying transport.
+
+      --rpc-req-timeout <RPC_REQ_TIMEOUT>
+          Set a timeout on for all request handlers
+
+  -t, --tls
+          Enabled `tls` support
+
+  -C, --ssl-cert <SSL_CERT>
+          SSL certificate path
+
+  -K, --ssl-key <SSL_KEY>
+          SSL certificate key path
+
+      --rpc-tcp-nodelay
+          Set the value of TCP_NODELAY option for accepted connections.
+
+          Enabled by default.
+
+      --rpc-tcp-keepalive <RPC_TCP_KEEPALIVE>
+          Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
+
+      --peace-db-url <PEACE_DB_URL>
+          Database connection URL
+
+          [default: protocol://username:password@host/database]
+
+      --peace-db-max-connections <PEACE_DB_MAX_CONNECTIONS>
+          Set the maximum number of connections of the pool
+
+      --peace-db-min-connections <PEACE_DB_MIN_CONNECTIONS>
+          Set the minimum number of connections of the pool
+
+      --peace-db-connect-timeout <PEACE_DB_CONNECT_TIMEOUT>
+          Set the timeout duration when acquiring a connection
+
+      --peace-db-acquire-timeout <PEACE_DB_ACQUIRE_TIMEOUT>
+          Set the maximum amount of time to spend waiting for acquiring a connection
+
+      --peace-db-idle-timeout <PEACE_DB_IDLE_TIMEOUT>
+          Set the idle duration before closing a connection
+
+      --peace-db-max-lifetime <PEACE_DB_MAX_LIFETIME>
+          Set the maximum lifetime of individual connections
+
+      --peace-db-sqlx-logging
+          Enable SQLx statement logging
+
+      --peace-db-sqlx-logging-level <PEACE_DB_SQLX_LOGGING_LEVEL>
+          Set SQLx statement logging level (default [`LogLevel::Info`]) (ignored if `sqlx_logging` is false)
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+      --peace-db-set-schema-search-path <PEACE_DB_SET_SCHEMA_SEARCH_PATH>
+          Set schema search path (PostgreSQL only)
+
+      --bancho-state-uri <BANCHO_STATE_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5011]
+
+      --bancho-state-uds <BANCHO_STATE_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --bancho-state-tls
+          Enable `tls` connection
+
+      --bancho-state-ssl-cert <BANCHO_STATE_SSL_CERT>
+          SSL certificate path
+
+      --bancho-state-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+```
+
+---
+
+## geoip
+
+```bash
+cargo run --bin geoip-server -- --help
+```
+
+```bash
+PEACE Geo-ip gRPC service
+
+Usage: geoip-server.exe [OPTIONS] [COMMAND]
+
+Commands:
+  run
+          Start service
+  create-config
+          Create default configuration file
+  help
+          Print this message or the help of the given subcommand(s)
+
+Options:
+  -c, --config <PATH>
+          Configuration file path (Support `.yml`, `.json`, `toml`)
+
+      --save-cfg
+          Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
+
+  -L, --log-level <LOG_LEVEL>
+          Logging level
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+  -F, --log-env-filter <LOG_ENV_FILTER>
+          Logging env filter
+
+  -d, --debug
+          Turning on debug will display information such as code line number, source file, thread id, etc
+
+  -H, --rpc-addr <RPC_ADDR>
+          The address and port the `gRPC` server listens on
+
+          [default: 127.0.0.1:5010]
+
+      --rpc-uds <RPC_UDS>
+          Using unix domain socket instead of TCP/IP socket. Only for unix systems.
+
+          If configured, `uds` will be preferred over `addr`.
+
+  -A, --rpc-admin-endpoints
+          Enable admin rpc service
+
+  -T, --rpc-admin-token <RPC_ADMIN_TOKEN>
+          Admin rpc service `Authorization` `Bearer` token
+
+  -R, --rpc-reflection
+          Enable reflection service
+
+  -r, --rpc-accept-http1
+          Allow this server to accept http1 requests.
+
+          Accepting http1 requests is only useful when developing grpc-web enabled services. If this setting is set to true but services are not correctly configured to handle grpc-web requests, your server may return confusing (but correct) protocol errors.
+
+          Default is false.
+
+      --rpc-concurrency-limit-per-connection <RPC_CONCURRENCY_LIMIT_PER_CONNECTION>
+          Set the concurrency limit applied to on requests inbound per connection
+
+      --rpc-http2-adaptive-window <RPC_HTTP2_ADAPTIVE_WINDOW>
+          Sets whether to use an adaptive flow control. Defaults to false. Enabling this will override the limits set in http2_initial_stream_window_size and http2_initial_connection_window_size
+
+          [possible values: true, false]
+
+      --rpc-http2-keepalive-interval <RPC_HTTP2_KEEPALIVE_INTERVAL>
+          Set whether HTTP2 Ping frames are enabled on accepted connections.
+
+          If None is specified, HTTP2 keepalive is disabled, otherwise the duration specified will be the time interval between HTTP2 Ping frames. The timeout for receiving an acknowledgement of the keepalive ping can be set with Server::http2_keepalive_timeout.
+
+          Default is no HTTP2 keepalive (None)
+
+      --rpc-http2-keepalive-timeout <RPC_HTTP2_KEEPALIVE_TIMEOUT>
+          Sets a timeout for receiving an acknowledgement of the keepalive ping.
+
+          If the ping is not acknowledged within the timeout, the connection will be closed. Does nothing if http2_keep_alive_interval is disabled.
+
+          Default is 20 seconds.
+
+          [default: 20]
+
+      --rpc-initial-connection-window-size <RPC_INITIAL_CONNECTION_WINDOW_SIZE>
+          Sets the max connection-level flow control for HTTP2
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-initial-stream-window-size <RPC_INITIAL_STREAM_WINDOW_SIZE>
+          Sets the SETTINGS_INITIAL_WINDOW_SIZE option for HTTP2 stream-level flow control.
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-max-concurrent-streams <RPC_MAX_CONCURRENT_STREAMS>
+          Sets the SETTINGS_MAX_CONCURRENT_STREAMS option for HTTP2 connections.
+
+          Default is no limit (None).
+
+      --rpc-max-frame-size <RPC_MAX_FRAME_SIZE>
+          Sets the maximum frame size to use for HTTP2.
+
+          Passing None will do nothing.
+
+          If not set, will default from underlying transport.
+
+      --rpc-req-timeout <RPC_REQ_TIMEOUT>
+          Set a timeout on for all request handlers
+
+  -t, --tls
+          Enabled `tls` support
+
+  -C, --ssl-cert <SSL_CERT>
+          SSL certificate path
+
+  -K, --ssl-key <SSL_KEY>
+          SSL certificate key path
+
+      --rpc-tcp-nodelay
+          Set the value of TCP_NODELAY option for accepted connections.
+
+          Enabled by default.
+
+      --rpc-tcp-keepalive <RPC_TCP_KEEPALIVE>
+          Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
+
+  -P, --geo-db-path <GEO_DB_PATH>
+
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+```
+
+---
+
+## signature
+
+```bash
+cargo run --bin signature-server -- --help
+```
+
+```bash
+PEACE Signature service
+
+Usage: signature-server.exe [OPTIONS] [COMMAND]
+
+Commands:
+  run
+          Start service
+  create-config
+          Create default configuration file
+  help
+          Print this message or the help of the given subcommand(s)
+
+Options:
+  -c, --config <PATH>
+          Configuration file path (Support `.yml`, `.json`, `toml`)
+
+      --save-cfg
+          Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
+
+  -L, --log-level <LOG_LEVEL>
+          Logging level
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+  -F, --log-env-filter <LOG_ENV_FILTER>
+          Logging env filter
+
+  -d, --debug
+          Turning on debug will display information such as code line number, source file, thread id, etc
+
+  -H, --rpc-addr <RPC_ADDR>
+          The address and port the `gRPC` server listens on
+
+          [default: 127.0.0.1:5010]
+
+      --rpc-uds <RPC_UDS>
+          Using unix domain socket instead of TCP/IP socket. Only for unix systems.
+
+          If configured, `uds` will be preferred over `addr`.
+
+  -A, --rpc-admin-endpoints
+          Enable admin rpc service
+
+  -T, --rpc-admin-token <RPC_ADMIN_TOKEN>
+          Admin rpc service `Authorization` `Bearer` token
+
+  -R, --rpc-reflection
+          Enable reflection service
+
+  -r, --rpc-accept-http1
+          Allow this server to accept http1 requests.
+
+          Accepting http1 requests is only useful when developing grpc-web enabled services. If this setting is set to true but services are not correctly configured to handle grpc-web requests, your server may return confusing (but correct) protocol errors.
+
+          Default is false.
+
+      --rpc-concurrency-limit-per-connection <RPC_CONCURRENCY_LIMIT_PER_CONNECTION>
+          Set the concurrency limit applied to on requests inbound per connection
+
+      --rpc-http2-adaptive-window <RPC_HTTP2_ADAPTIVE_WINDOW>
+          Sets whether to use an adaptive flow control. Defaults to false. Enabling this will override the limits set in http2_initial_stream_window_size and http2_initial_connection_window_size
+
+          [possible values: true, false]
+
+      --rpc-http2-keepalive-interval <RPC_HTTP2_KEEPALIVE_INTERVAL>
+          Set whether HTTP2 Ping frames are enabled on accepted connections.
+
+          If None is specified, HTTP2 keepalive is disabled, otherwise the duration specified will be the time interval between HTTP2 Ping frames. The timeout for receiving an acknowledgement of the keepalive ping can be set with Server::http2_keepalive_timeout.
+
+          Default is no HTTP2 keepalive (None)
+
+      --rpc-http2-keepalive-timeout <RPC_HTTP2_KEEPALIVE_TIMEOUT>
+          Sets a timeout for receiving an acknowledgement of the keepalive ping.
+
+          If the ping is not acknowledged within the timeout, the connection will be closed. Does nothing if http2_keep_alive_interval is disabled.
+
+          Default is 20 seconds.
+
+          [default: 20]
+
+      --rpc-initial-connection-window-size <RPC_INITIAL_CONNECTION_WINDOW_SIZE>
+          Sets the max connection-level flow control for HTTP2
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-initial-stream-window-size <RPC_INITIAL_STREAM_WINDOW_SIZE>
+          Sets the SETTINGS_INITIAL_WINDOW_SIZE option for HTTP2 stream-level flow control.
+
+          Default is 65,535
+
+          [default: 65535]
+
+      --rpc-max-concurrent-streams <RPC_MAX_CONCURRENT_STREAMS>
+          Sets the SETTINGS_MAX_CONCURRENT_STREAMS option for HTTP2 connections.
+
+          Default is no limit (None).
+
+      --rpc-max-frame-size <RPC_MAX_FRAME_SIZE>
+          Sets the maximum frame size to use for HTTP2.
+
+          Passing None will do nothing.
+
+          If not set, will default from underlying transport.
+
+      --rpc-req-timeout <RPC_REQ_TIMEOUT>
+          Set a timeout on for all request handlers
+
+  -t, --tls
+          Enabled `tls` support
+
+  -C, --ssl-cert <SSL_CERT>
+          SSL certificate path
+
+  -K, --ssl-key <SSL_KEY>
+          SSL certificate key path
+
+      --rpc-tcp-nodelay
+          Set the value of TCP_NODELAY option for accepted connections.
+
+          Enabled by default.
+
+      --rpc-tcp-keepalive <RPC_TCP_KEEPALIVE>
+          Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
+
+  -P, --ed25519-private-key-path <ED25519_PRIVATE_KEY_PATH>
+
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
 ```
 
 ---
@@ -537,7 +1559,6 @@ Options:
 ```bash
 cargo run --bin db-peace-migrate -- --help
 ```
-
 
 ```bash
 USAGE:
@@ -565,16 +1586,12 @@ OPTIONS:
             Print version information
 
 SUBCOMMANDS:
-    down
-            Rollback applied migrations
-    fresh
-            Drop all tables from the database, then reapply all migrations
-    generate
-            Generate a new, empty migration
-    help
-            Print this message or the help of the given subcommand(s)
     init
             Initialize migration directory
+    generate
+            Generate a new, empty migration
+    fresh
+            Drop all tables from the database, then reapply all migrations
     refresh
             Rollback all applied migrations, then reapply all migrations
     reset
@@ -583,20 +1600,22 @@ SUBCOMMANDS:
             Check the status of all migrations
     up
             Apply pending migrations
+    down
+            Rollback applied migrations
+    help
+            Print this message or the help of the given subcommand(s)
 ```
 
 ---
 
-## db-cli
+## db-cli (sea-orm)
 
 ```bash
 cargo run --bin db-cli -- --help
 ```
 
-
 ```bash
-USAGE:
-    db-cli.exe [OPTIONS] <SUBCOMMAND>
+USAGE: db-cli.exe [OPTIONS] <SUBCOMMAND>
 
 OPTIONS:
     -h, --help       Print help information
@@ -605,16 +1624,15 @@ OPTIONS:
 
 SUBCOMMANDS:
     generate    Codegen related commands
-    help        Print this message or the help of the given subcommand(s)
     migrate     Migration related commands
+    help        Print this message or the help of the given subcommand(s)
 ```
 
-## db-peace-cli
+## db-peace-cli (PEACE database management)
 
 ```bash
 cargo run --bin db-peace-cli -- --help
 ```
-
 
 ```bash
 Peace db CLI
@@ -628,7 +1646,6 @@ Commands:
 
 Options:
   -u, --database-url <DATABASE_URL>
-  -h, --help                         Print help information
-  -V, --version                      Print version information
+  -h, --help                         Print help
+  -V, --version                      Print version
 ```
-

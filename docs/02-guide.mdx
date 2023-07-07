@@ -90,6 +90,7 @@ CREATE DATABASE peace;
 
 ```bash title="linux or wsl"
 cd peace
+# Create an empty `peace.db`
 vim peace.db
 ```
 
@@ -114,10 +115,18 @@ cargo run --bin db-peace-migrate up -u <postgresql|mysql|sqlite>://<username>:<p
 
 :::
 
-Take PostgreSQL as an example:
+PostgreSQL example:
 
 ```bash
 cargo run --bin db-peace-migrate up -u postgresql://postgres:123456@localhost:5432/peace
+```
+
+Sqlite example:
+
+```bash
+# We need create an empty `peace.db` file first like:
+vim peace.db
+cargo run --bin db-peace-migrate up -u sqlite://peace.db
 ```
 
 :::tip
@@ -198,7 +207,8 @@ sudo vim /etc/hosts
 ```
 
 ```bash title="windows"
-C:\Windows\System32\drivers\etc\hosts
+# Press `CTRL + R` and run:
+notepad C:\Windows\System32\drivers\etc\hosts
 ```
 
 Add contents
@@ -245,6 +255,8 @@ Once we are ready, we proceed to start the local server.
 
 ## 1. Multi-service deployment
 
+Choosing this deployment method requires running multiple services, which can be distributed across different computers and networks.
+
 ### 1. Install protoc - The Protocol Buffer Compiler
 
 :::info
@@ -259,10 +271,14 @@ The easiest way to install `protoc` is to download the latest release zip file f
 extract it, and then add the directory containing the binary files to your environment variable.
 
 ```bash title="Linux example"
-curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip
-unzip protoc-3.15.8-linux-x86_64.zip -d $HOME/.local
+curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v23.4/protoc-23.4-linux-x86_64.zip
+unzip protoc-23.4-linux-x86_64.zip -d $HOME/.local
 export PATH="$PATH:$HOME/.local/bin"
 protoc --version
+```
+
+```bash title="Windows"
+https://github.com/protocolbuffers/protobuf/releases/download/v23.4/protoc-23.4-win64.zip
 ```
 
 :::note
@@ -278,7 +294,7 @@ Reference links:
 
 ---
 
-### 2. Start http gateway
+### 2. Start PEACE gateway service
 
 :::info
 The **gateway** is a stateless http(s) service,
@@ -287,20 +303,37 @@ you can customize it and specify different processing functions for different ur
 :::
 
 ```bash title="Start gateway server"
-cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect --bancho-state-rpc-lazy-connect
+cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --admin-endpoints --bancho-uri http://127.0.0.1:5010 --bancho-state-uri http://127.0.0.1:5011 --chat-uri http://127.0.0.1:5012 --bancho-lazy-connect --bancho-state-lazy-connect --chat-lazy-connect
 ```
 
 Now we can see some information, which means the startup is successful:
 
 ```bash
-    Finished dev [unoptimized + debuginfo] target(s) in 0.41s
-     Running `target\debug\gateway-server.exe --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --force-https --admin-endpoints --bancho-rpc-uri http://127.0.0.1:50051 --bancho-rpc-lazy-connect`
-2023-02-11T16:09:03.400220Z  INFO peace_gateway: bancho_rpc gRPC service: http://127.0.0.1:50051
-2023-02-11T16:09:03.405255Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui/
-2023-02-11T16:09:03.405347Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
-2023-02-11T16:09:03.405842Z  INFO peace_api::components::http::tls: >> Force https enabled
-2023-02-11T16:09:03.406044Z  INFO peace_api::components::http::tls: >> [HTTP SERVER] (only redirect http to https) listening on: http://127.0.0.1:8000
-2023-02-11T16:09:03.417664Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running gateway-server v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+>> Log level: Info (debug_mode: false)
+>> Runtime: single thread
+>> Runs on framework peace_api v0.1.0
+
+2023-07-07T17:08:17.534761Z  INFO peace_services::rpc_config: [Config] bancho gRPC service endpoint: http://127.0.0.1:5010
+2023-07-07T17:08:17.535297Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
+2023-07-07T17:08:17.535506Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
+2023-07-07T17:08:17.536803Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
+2023-07-07T17:08:17.536969Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
+2023-07-07T17:08:17.537372Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
+2023-07-07T17:08:17.540689Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
 ```
 
 :::tip
@@ -313,7 +346,7 @@ Since we passed in a `--admin-endpoints` flags,
 there are some APIs available to the administrator (such as dynamically changing the log levels, etc.).
 
 By default, the server will try to connect to the `bancho` service when it starts,
-passing `--bancho-rpc-lazy-connect` flags will make the server not connect to `bancho` at startup.
+passing `--bancho-lazy-connect` flags will make the server not connect to `bancho` at startup.
 :::
 
 :::caution
@@ -329,7 +362,7 @@ cargo run --bin gateway-server -- --help
 
 ---
 
-### 3. Start bancho state service
+### 3. Start PEACE bancho state service
 
 :::info
 The **bancho-state** is a stateful gRPC service that provides the ability to store bancho server state,
@@ -344,15 +377,38 @@ Moreover, the server design of data and logic separation allows us to modify the
 multiplayer games, and data packets, and does not require a real "restart" of the entire server.
 
 ```bash title="Start bancho state server"
-cargo run --bin bancho-state-server -- --rpc-addr 127.0.0.1:12345 --rpc-reflection --rpc-admin-endpoints
+cargo run --bin bancho-state-server -- --rpc-reflection --rpc-admin-endpoints
 ```
 
 Now we can see some information, which means the startup is successful:
 
 ```bash
-    Finished dev [unoptimized + debuginfo] target(s) in 0.39s
-     Running `target\debug\bancho-state-server.exe --rpc-addr 127.0.0.1:12345 --rpc-reflection --rpc-admin-endpoints`
-2023-02-11T16:37:06.060012Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:12345
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running bancho-state-server v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+>> Log level: Info (debug_mode: false)
+>> Runtime: single thread
+>> Runs on framework peace_rpc v0.1.0
+
+2023-07-07T17:15:16.803825Z  INFO peace_services::signature::services: initializing Signature service...
+2023-07-07T17:15:16.804196Z  INFO peace_services::rpc_config: [Config] signature gRPC service endpoint: http://127.0.0.1:5014
+2023-07-07T17:15:16.804483Z  INFO peace_services::rpc_config: Attempting to connect to signature gRPC endpoint...
+2023-07-07T17:15:18.835894Z  INFO peace_services::signature::services: Generating new ed25519 private key...
+2023-07-07T17:15:18.836886Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
+2023-07-07T17:15:18.837114Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-07-07T17:15:18.837354Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
+2023-07-07T17:15:18.839499Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
 ```
 
 :::tip
@@ -369,6 +425,17 @@ In the production environment, please do not directly expose the gRPC service,
 and pass `--rpc-admin-token <ADMIN_TOKEN>` to set a token for the administrator rpc functions.
 :::
 
+:::note
+The `bancho-state` service requires the use of the `signature` service to
+distribute ED25519 signatures as part of tokens for successfully logged-in users to ensure security.
+Therefore, when `bancho-state` is launched,
+it will attempt to connect to a remote gRPC channel for the `signature` service.
+If it cannot connect, an internal `signature` service will be started within the `bancho-state` service,
+and an ED25519 private key will be generated for signing.
+
+- Specify the URI for the `signature` service: `--signature-uri` (default is `http://127.0.0.1:5014`)
+  :::
+
 **View all available flags:**
 
 ```bash
@@ -377,16 +444,17 @@ cargo run --bin bancho-state-server -- --help
 
 ---
 
-### 4. Start bancho logic service
+### 4. Start PEACE bancho service
 
 :::info
 The **bancho** is a stateless gRPC service that contains the logic of the bancho server.
 You can customize the logic of the server according to your needs.
-Additionally, it requires a `bancho-state` service to store and process server state.
+
+It requires a `bancho-state` and `chat` services to store and process server state.
 :::
 
-```bash title="Start bancho logic service"
-cargo run --bin bancho-server -- --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints --peace-db-url postgresql://postgres:123456@localhost:5432/peace
+```bash title="Start bancho service"
+cargo run --bin bancho-server -- --peace-db-url sqlite://peace.db --bancho-state-uri http://127.0.0.1:5011 --chat-uri http://127.0.0.1:5012 --bancho-state-lazy-connect --chat-lazy-connect --rpc-reflection --rpc-admin-endpoints
 ```
 
 :::note
@@ -396,10 +464,30 @@ You should set `--peace-db-url` to your own database url! We have talked about i
 Now we can see some information, which means the startup is successful:
 
 ```bash
-    Finished dev [unoptimized + debuginfo] target(s) in 0.40s
-     Running `target\debug\bancho-server.exe --bancho-state-rpc-uri http://127.0.0.1:12345 --bancho-state-rpc-lazy-connect --rpc-reflection --rpc-admin-endpoints`
-2023-02-11T17:09:50.122358Z  INFO bancho: bancho_state_rpc gRPC service: http://127.0.0.1:12345
-2023-02-11T17:09:50.146280Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:50051
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running bancho-server v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+>> Log level: Info (debug_mode: false)
+>> Runtime: single thread
+>> Runs on framework peace_rpc v0.1.0
+
+2023-07-07T17:25:55.454430Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
+2023-07-07T17:25:55.454825Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
+2023-07-07T17:25:55.455004Z  INFO peace_services::geoip::services: initializing Geoip service...
+2023-07-07T17:25:55.455998Z  INFO peace_services::geoip::services: Geoip service init successful, type: "Local"
+2023-07-07T17:25:55.456277Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
+2023-07-07T17:25:55.458108Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
 ```
 
 :::tip
@@ -410,8 +498,8 @@ which is convenient for debugging and calling services.
 
 The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
 
-By default, the server will try to connect to the `bancho-state` service when it starts,
-passing `--bancho-state-rpc-lazy-connect` flags will make the server not connect to `bancho-state` at startup.
+By default, the server will try to connect to the `bancho-state` and `chat` services when it starts,
+passing `--<service>-lazy-connect` flags will make the server not connect to <service> at startup.
 :::
 
 :::caution
@@ -427,12 +515,56 @@ cargo run --bin bancho-state-server -- --help
 
 ---
 
+### 5. Start PEACE chat service
+
+:::info
+**chat** is a stateful gRPC service that currently includes chat channels and message queues for bancho users,
+and can be used to send messages directly to users of `bancho`, `lazer`, and `web` clients through the API exposed by this service.
+:::
+
+```bash title="Start chat service"
+cargo run --bin chat-server -- --peace-db-url sqlite://peace.db --rpc-reflection --rpc-admin-endpoints
+```
+
+Now we can see some information, which means the startup is successful:
+
+```bash
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running chat-server v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+>> Log level: Info (debug_mode: false)
+>> Runtime: single thread
+>> Runs on framework peace_rpc v0.1.0
+
+2023-07-07T17:37:14.694919Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
+2023-07-07T17:37:14.697812Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
+```
+
+**View all available flags:**
+
+```bash
+cargo run --bin chat-server -- --help
+```
+
+---
+
 ## 2. Standalone Bancho instance
 
 If you wish to run a standalone instance, please refer to the following commands:
 
 ```bash title="Start bancho standalone server"
-cargo run --bin bancho-standalone-server -- --log-env-filter=tower_http=debug --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url postgresql://postgres:123456@localhost:5432/peace
+cargo run --bin bancho-standalone-server -- --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url sqlite://peace.db
 ```
 
 ---
