@@ -568,6 +568,47 @@ If you wish to run a standalone instance, please refer to the following commands
 cargo run --bin bancho-standalone-server -- --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url sqlite://peace.db
 ```
 
+Now we can see some information, which means the startup is successful:
+
+```bash
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running bancho-standalone v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+>> Log level: Info (debug_mode: false)
+>> Runtime: single thread
+>> Runs on framework peace_api v0.1.0
+
+2023-07-07T17:42:00.936528Z  INFO peace_services::signature::services: initializing Signature service...
+2023-07-07T17:42:00.937392Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
+2023-07-07T17:42:00.937629Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-07-07T17:42:00.937842Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
+2023-07-07T17:42:00.938069Z  INFO peace_services::geoip::services: initializing Geoip service...
+2023-07-07T17:42:00.938639Z  INFO peace_services::geoip::services: Geoip service init successful, type: "Local"
+2023-07-07T17:42:00.938951Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
+2023-07-07T17:42:00.939127Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
+2023-07-07T17:42:00.940351Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
+2023-07-07T17:42:00.940514Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
+2023-07-07T17:42:00.940966Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
+2023-07-07T17:42:00.944202Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
+```
+
+**View all available flags:**
+
+```bash
+cargo run --bin bancho-standalone-server -- --help
+```
+
 ---
 
 ## Run osu! through the created shortcut
