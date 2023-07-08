@@ -1606,6 +1606,311 @@ SUBCOMMANDS:
             Print this message or the help of the given subcommand(s)
 ```
 
+## bancho-standalone
+
+```bash
+cargo run --bin bancho-standalone-server -- --help
+```
+
+```bash
+    ____  _________   ____________                      _           __
+   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
+  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
+/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
+                                /_/              /___/
+
+
+>> PEACE PROJECT @ 2023
+>> Running bancho-standalone v0.1.0
+  | authors: Pure-Peace <purepeace_@outlook.com>
+  | git repository: https://github.com/pure-peace/peace
+  | docs website: https://peace.osu.icu/
+
+PEACE Bancho standalone (web) service
+
+Usage: bancho-standalone-server.exe [OPTIONS] [COMMAND]
+
+Commands:
+  run
+          Start service
+  create-config
+          Create default configuration file
+  help
+          Print this message or the help of the given subcommand(s)
+
+Options:
+  -c, --config <PATH>
+          Configuration file path (Support `.yml`, `.json`, `toml`)
+
+      --save-cfg
+          Save the current parameters as a configuration file
+
+  -M, --runtime-multi-thread
+          Enable multi thread (if feature is included)
+
+      --runtime-worker-threads <RUNTIME_WORKER_THREADS>
+          Sets the number of worker threads the Runtime will use.
+
+          This can be any number above 0 though it is advised to keep this value on the smaller side.
+
+          The default value is the number of cores available to the system.
+
+          When using the current_thread runtime this method has no effect.
+
+      --runtime-thread-name <RUNTIME_THREAD_NAME>
+          Sets name of threads spawned by the Runtime's thread pool.
+
+          The default name is "tokio-runtime-worker".
+
+      --runtime-thread-stack-size <RUNTIME_THREAD_STACK_SIZE>
+          Sets the stack size (in bytes) for worker threads.
+
+          The actual stack size may be greater than this value if the platform specifies minimal stack size.
+
+          The default stack size for spawned threads is 2 MiB, though this particular stack size is subject to change in the future.
+
+      --runtime-enable-io
+          Enables the I/O driver.
+
+          Doing this enables using net, process, signal, and some I/O types on the runtime.
+
+      --runtime-enable-time
+          Enables the time driver.
+
+          Doing this enables using `tokio::time` on the runtime.
+
+      --runtime-enable-all
+          Enables both I/O and time drivers.
+
+          Doing this is a shorthand for calling enable_io and enable_time individually. If additional components are added to Tokio in the future, enable_all will include these future components.
+
+      --runtime-event-interval <RUNTIME_EVENT_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll for external events (timers, I/O, and so on). A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default, the event interval is `61` for all scheduler types.
+
+          Setting the event interval determines the effective "priority" of delivering these external events (which may wake up additional tasks), compared to executing tasks that are currently ready to run. A smaller value is useful when tasks frequently spend a long time in polling, or frequently yield, which can result in overly long delays picking up I/O events. Conversely, picking up new events requires extra synchronization and syscall overhead, so if tasks generally complete their polling quickly, a higher event interval will minimize that overhead while still keeping the scheduler responsive to events.
+
+      --runtime-global-queue-interval <RUNTIME_GLOBAL_QUEUE_INTERVAL>
+          Sets the number of scheduler ticks after which the scheduler will poll the global task queue.
+
+          A scheduler "tick" roughly corresponds to one `poll` invocation on a task.
+
+          By default the global queue interval is:
+
+          - `31` for the current-thread scheduler. - `61` for the multithreaded scheduler.
+
+          Schedulers have a local queue of already-claimed tasks, and a global queue of incoming tasks. Setting the interval to a smaller value increases the fairness of the scheduler, at the cost of more synchronization overhead. That can be beneficial for prioritizing getting started on new work, especially if tasks frequently yield rather than complete or await on further I/O. Conversely, a higher value prioritizes existing work, and is a good choice when most tasks quickly complete polling.
+
+      --runtime-max-blocking-threads <RUNTIME_MAX_BLOCKING_THREADS>
+          Specifies the limit for additional threads spawned by the Runtime.
+
+          These threads are used for blocking operations like tasks spawned through `[spawn_blocking]`. Unlike the `[worker_threads]`, they are not always active and will exit if left idle for too long. You can change this timeout duration with `[thread_keep_alive]`.
+
+          The default value is 512.
+
+      --runtime-thread-keep-alive <RUNTIME_THREAD_KEEP_ALIVE>
+          Sets a custom timeout for a thread in the blocking pool (millis).
+
+          By default, the timeout for a thread is set to 10 seconds. This can be overridden using .thread_keep_alive().
+
+  -L, --log-level <LOG_LEVEL>
+          Logging level
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+  -F, --log-env-filter <LOG_ENV_FILTER>
+          Logging env filter
+
+  -d, --debug
+          Turning on debug will display information such as code line number, source file, thread id, etc
+
+  -H, --http-addr <HTTP_ADDR>
+          The address and port the `http` server listens on
+
+          [default: 127.0.0.1:8000]
+
+  -S, --https-addr <HTTPS_ADDR>
+          The address and port the `https` server listens on
+
+          [default: 127.0.0.1:443]
+
+  -t, --tls
+          Enabled `tls` support
+
+  -C, --ssl-cert <SSL_CERT>
+          SSL certificate path
+
+  -K, --ssl-key <SSL_KEY>
+          SSL certificate key path
+
+  -A, --admin-endpoints
+          Enabled admin api
+
+  -a, --admin-token <ADMIN_TOKEN>
+          Admin api `Authorization` `bearer` token
+
+      --concurrency-limit <CONCURRENCY_LIMIT>
+          Limit the max number of in-flight requests
+
+          [default: 1024]
+
+  -r, --req-timeout <REQ_TIMEOUT>
+          Fail requests that take longer than timeout (secs)
+
+          [default: 10]
+
+  -N, --hostname-routing
+          Enabled `hostname-based` routing
+
+  -f, --force-https
+          Redirect http to https
+
+      --tcp-nodelay
+          Set the value of TCP_NODELAY option for accepted connections
+
+      --tcp-sleep-on-accept-errors
+          Set whether to sleep on accept errors, to avoid exhausting file descriptor limits
+
+      --tcp-keepalive <TCP_KEEPALIVE>
+          Set how often to send TCP keepalive probes. By default TCP keepalive probes is disabled
+
+      --tcp-keepalive-interval <TCP_KEEPALIVE_INTERVAL>
+          Set the duration between two successive TCP keepalive retransmissions, if acknowledgement to the previous keepalive transmission is not received
+
+      --tcp-keepalive-retries <TCP_KEEPALIVE_RETRIES>
+          Set the number of retransmissions to be carried out before declaring that remote end is not available
+
+      --swagger-path <SWAGGER_PATH>
+          The `swagger ui` base uri path
+
+          [default: /swagger-ui]
+
+      --openapi-json <OPENAPI_JSON>
+          The `openapi.json` uri path
+
+          [default: /api-doc/openapi.json]
+
+      --peace-db-url <PEACE_DB_URL>
+          Database connection URL
+
+          [default: protocol://username:password@host/database]
+
+      --peace-db-max-connections <PEACE_DB_MAX_CONNECTIONS>
+          Set the maximum number of connections of the pool
+
+      --peace-db-min-connections <PEACE_DB_MIN_CONNECTIONS>
+          Set the minimum number of connections of the pool
+
+      --peace-db-connect-timeout <PEACE_DB_CONNECT_TIMEOUT>
+          Set the timeout duration when acquiring a connection
+
+      --peace-db-acquire-timeout <PEACE_DB_ACQUIRE_TIMEOUT>
+          Set the maximum amount of time to spend waiting for acquiring a connection
+
+      --peace-db-idle-timeout <PEACE_DB_IDLE_TIMEOUT>
+          Set the idle duration before closing a connection
+
+      --peace-db-max-lifetime <PEACE_DB_MAX_LIFETIME>
+          Set the maximum lifetime of individual connections
+
+      --peace-db-sqlx-logging
+          Enable SQLx statement logging
+
+      --peace-db-sqlx-logging-level <PEACE_DB_SQLX_LOGGING_LEVEL>
+          Set SQLx statement logging level (default [`LogLevel::Info`]) (ignored if `sqlx_logging` is false)
+
+          [default: info]
+
+          Possible values:
+          - off:   Designates that trace instrumentation should be completely disabled
+          - error: Designates very serious errors
+          - warn:  Designates hazardous situations
+          - info:  Designates useful information
+          - debug: Designates lower priority information
+          - trace: Designates very low priority, often extremely verbose, information
+
+      --peace-db-set-schema-search-path <PEACE_DB_SET_SCHEMA_SEARCH_PATH>
+          Set schema search path (PostgreSQL only)
+
+      --debug-endpoints
+
+
+      --user-sessions-recycle-deactive-secs <USER_SESSIONS_RECYCLE_DEACTIVE_SECS>
+          [default: 180]
+
+      --user-sessions-recycle-interval-secs <USER_SESSIONS_RECYCLE_INTERVAL_SECS>
+          [default: 180]
+
+      --notify-messages-recycle-interval-secs <NOTIFY_MESSAGES_RECYCLE_INTERVAL_SECS>
+          [default: 300]
+
+      --password-caches-recycle-deactive-secs <PASSWORD_CACHES_RECYCLE_DEACTIVE_SECS>
+          [default: 86400]
+
+      --password-caches-recycle-interval-secs <PASSWORD_CACHES_RECYCLE_INTERVAL_SECS>
+          [default: 43200]
+
+      --geoip-uri <GEOIP_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5013]
+
+      --geoip-uds <GEOIP_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --geoip-tls
+          Enable `tls` connection
+
+      --geoip-ssl-cert <GEOIP_SSL_CERT>
+          SSL certificate path
+
+      --geoip-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+  -P, --geo-db-path <GEO_DB_PATH>
+
+
+      --signature-uri <SIGNATURE_URI>
+          Service uri
+
+          [default: http://127.0.0.1:5014]
+
+      --signature-uds <SIGNATURE_UDS>
+          Service unix domain socket path. Only for unix systems.
+
+          `uds` will be preferred over `uri`.
+
+      --signature-tls
+          Enable `tls` connection
+
+      --signature-ssl-cert <SIGNATURE_SSL_CERT>
+          SSL certificate path
+
+      --signature-lazy-connect
+          Not attempt to connect to the endpoint until first use
+
+      --ed25519-private-key-path <ED25519_PRIVATE_KEY_PATH>
+
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+```
+
 ---
 
 ## db-cli (sea-orm)
