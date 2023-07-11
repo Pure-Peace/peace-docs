@@ -121,7 +121,7 @@ PostgreSQL example:
 cargo run --bin db-peace-migrate up -u postgresql://postgres:123456@localhost:5432/peace
 ```
 
-Sqlite example:
+SQLite example:
 
 ```bash
 # We need create an empty `peace.db` file first like:
@@ -138,13 +138,13 @@ If you changed your database structure, generate new database entities with:
 cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost:5432/peace -o core/db/src/peace/entity
 ```
 
-We can create a test user like:
+:::
+
+After setting up the database, we need to create a test user, and we can use this account to log in to osu!
 
 ```bash
 cargo run --bin db-peace-cli create-user -u postgresql://postgres:123456@localhost:5432/peace --username test --raw-password test --email test@emfail.com
 ```
-
-:::
 
 ---
 
@@ -248,8 +248,8 @@ Once we are ready, we proceed to start the local server.
 
 **PEACE** is a development framework that offers flexible service combinations, so you can choose how to run the services:
 
-1. [Multi-service deployment](#multi-service-deployment): can be deployed in a distributed environment, but requires starting multiple services
-2. [Standalone instance](#standalone-bancho-instance): lightweight and can be played on a single machine
+1. [**Multi-service deployment**](#1-multi-service-deployment): can be deployed in a distributed environment, but requires starting multiple services
+2. [**Standalone instance**](#2-standalone-bancho-instance): lightweight and can be played on a single machine
 
 ---
 
