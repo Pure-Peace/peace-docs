@@ -140,6 +140,10 @@ cargo run --bin db-cli generate entity -u postgresql://postgres:123456@localhost
 
 :::
 
+---
+
+### 1-1. Create a test user
+
 After setting up the database, we need to create a test user, and we can use this account to log in to osu!
 
 ```bash
@@ -184,7 +188,9 @@ so we need to prepare some ssl certificates before starting.
 
 This will generate `cert.cer` and `key.pem` in the current directory.
 
-**Install ssl certificate (optional)**
+---
+
+### 2-1. Install ssl certificate (optional)
 
 If you want to start osu! on your local machine and connect to the peace server, you need to install this certificate -> `cert.cer`.
 
@@ -359,6 +365,13 @@ or pass `--admin-token <ADMIN_TOKEN>` to set a token for the administrator api.
 ```bash
 cargo run --bin gateway-server -- --help
 ```
+
+:::tip
+If you want to allow friends in the LAN to log in to your server,
+you can use the parameter `--https-addr 0.0.0.0:443` to start the service,
+and then let other users install the certificate on their computers
+and set up hosts and create shortcuts (repeat previous steps [2-1](#2-1-install-ssl-certificate-optional), [3](#3-set-hosts), [4](#4-create-a-shortcut-to-osuexe)).
+:::
 
 ---
 
@@ -608,6 +621,13 @@ Now we can see some information, which means the startup is successful:
 ```bash
 cargo run --bin bancho-standalone-server -- --help
 ```
+
+:::tip
+If you want to allow friends in the LAN to log in to your server,
+you can use the parameter `--https-addr 0.0.0.0:443` to start the service,
+and then let other users install the certificate on their computers
+and set up hosts and create shortcuts (repeat previous steps [2-1](#2-1-install-ssl-certificate-optional), [3](#3-set-hosts), [4](#4-create-a-shortcut-to-osuexe)).
+:::
 
 ---
 
