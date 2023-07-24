@@ -309,7 +309,7 @@ you can customize it and specify different processing functions for different ur
 :::
 
 ```bash title="Start gateway server"
-cargo run --bin gateway-server -- --log-env-filter=tower_http=debug --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --admin-endpoints --bancho-uri http://127.0.0.1:5010 --bancho-state-uri http://127.0.0.1:5011 --chat-uri http://127.0.0.1:5012 --bancho-lazy-connect --bancho-state-lazy-connect --chat-lazy-connect
+cargo run --bin gateway-server -- --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --admin-endpoints --bancho-uri http://127.0.0.1:5010 --bancho-state-uri http://127.0.0.1:5011 --chat-uri http://127.0.0.1:5012 --bancho-lazy-connect --bancho-state-lazy-connect --chat-lazy-connect
 ```
 
 Now we can see some information, which means the startup is successful:
@@ -331,15 +331,24 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
->> Runs on framework peace_api v0.1.0
+2023-07-24T15:16:39.774912Z  INFO peace_services::rpc_config: [Config] bancho gRPC service endpoint: http://127.0.0.1:5010
+2023-07-24T15:16:39.775283Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
+2023-07-24T15:16:39.775368Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
 
-2023-07-07T17:08:17.534761Z  INFO peace_services::rpc_config: [Config] bancho gRPC service endpoint: http://127.0.0.1:5010
-2023-07-07T17:08:17.535297Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
-2023-07-07T17:08:17.535506Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
-2023-07-07T17:08:17.536803Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
-2023-07-07T17:08:17.536969Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
-2023-07-07T17:08:17.537372Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
-2023-07-07T17:08:17.540689Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
+
+    ____  _________   ____________               _
+   / __ \/ ____/   | / ____/ ____/  ____ _____  (_)
+  / /_/ / __/ / /| |/ /   / __/    / __ `/ __ \/ /
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /_/ / /
+/_/   /_____/_/  |_\____/_____/   \__,_/ .___/_/
+                                      /_/
+
+>> Runs on framework peace_api v0.1.0
+>> Starting service...
+2023-07-24T15:16:39.777661Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
+2023-07-24T15:16:39.777719Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
+2023-07-24T15:16:39.777919Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
+2023-07-24T15:16:39.779927Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
 ```
 
 :::tip
@@ -390,7 +399,7 @@ Moreover, the server design of data and logic separation allows us to modify the
 multiplayer games, and data packets, and does not require a real "restart" of the entire server.
 
 ```bash title="Start bancho state server"
-cargo run --bin bancho-state-server -- --rpc-reflection --rpc-admin-endpoints
+cargo run --bin bancho-state-server -- --rpc-reflection --rpc-admin-endpoints --bancho-state-save-dump --bancho-state-load-dump
 ```
 
 Now we can see some information, which means the startup is successful:
@@ -412,16 +421,24 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
->> Runs on framework peace_rpc v0.1.0
+2023-07-24T15:17:54.155222Z  INFO peace_services::signature::services: initializing Signature service...
+2023-07-24T15:17:54.155685Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
+2023-07-24T15:17:54.155786Z  INFO peace_services::bancho_state::services::bancho_state: [BanchoStateDump] Dump file not found, path: "./.service_dump/bancho_state.dump"
+2023-07-24T15:17:54.155910Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-07-24T15:17:54.156004Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
 
-2023-07-07T17:15:16.803825Z  INFO peace_services::signature::services: initializing Signature service...
-2023-07-07T17:15:16.804196Z  INFO peace_services::rpc_config: [Config] signature gRPC service endpoint: http://127.0.0.1:5014
-2023-07-07T17:15:16.804483Z  INFO peace_services::rpc_config: Attempting to connect to signature gRPC endpoint...
-2023-07-07T17:15:18.835894Z  INFO peace_services::signature::services: Generating new ed25519 private key...
-2023-07-07T17:15:18.836886Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
-2023-07-07T17:15:18.837114Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
-2023-07-07T17:15:18.837354Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
-2023-07-07T17:15:18.839499Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
+
+    ____  _________   ____________
+   / __ \/ ____/   | / ____/ ____/  _________  _____
+  / /_/ / __/ / /| |/ /   / __/    / ___/ __ \/ ___/
+ / ____/ /___/ ___ / /___/ /___   / /  / /_/ / /__
+/_/   /_____/_/  |_\____/_____/  /_/  / .___/\___/
+                                     /_/
+
+>> Runs on framework peace_rpc v0.1.0
+>> Starting service...
+2023-07-24T15:17:54.157865Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5011
+
 ```
 
 :::tip
@@ -431,6 +448,15 @@ you can get a list of rpc functions provided by this service through network req
 which is convenient for debugging and calling services.
 
 The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
+
+The `--bancho-state-save-dump` parameter allows the Bancho state service to store
+the service instance in memory to the hard disk when it terminates.
+
+By passing the `--bancho-state-load-dump` parameter at startup, the service can be restored to the state it was in when it was last closed,
+without losing user sessions, and users will not feel that the service has restarted.
+
+It is worth noting that the `--bancho-state-dump-expries` parameter can control the expiration time (in seconds) of the snapshot.
+If the snapshot expires, it will not be loaded.
 :::
 
 :::caution
@@ -494,14 +520,23 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
->> Runs on framework peace_rpc v0.1.0
+2023-07-24T15:18:21.908580Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
+2023-07-24T15:18:21.908933Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
+2023-07-24T15:18:21.909031Z  INFO peace_services::geoip::services: initializing Geoip service...
+2023-07-24T15:18:21.909406Z  INFO peace_services::geoip::services: Geoip service init successful, type: "Local"
+2023-07-24T15:18:21.909543Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
 
-2023-07-07T17:25:55.454430Z  INFO peace_services::rpc_config: [Config] bancho_state gRPC service endpoint: http://127.0.0.1:5011
-2023-07-07T17:25:55.454825Z  INFO peace_services::rpc_config: [Config] chat gRPC service endpoint: http://127.0.0.1:5012
-2023-07-07T17:25:55.455004Z  INFO peace_services::geoip::services: initializing Geoip service...
-2023-07-07T17:25:55.455998Z  INFO peace_services::geoip::services: Geoip service init successful, type: "Local"
-2023-07-07T17:25:55.456277Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
-2023-07-07T17:25:55.458108Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
+
+    ____  _________   ____________
+   / __ \/ ____/   | / ____/ ____/  _________  _____
+  / /_/ / __/ / /| |/ /   / __/    / ___/ __ \/ ___/
+ / ____/ /___/ ___ / /___/ /___   / /  / /_/ / /__
+/_/   /_____/_/  |_\____/_____/  /_/  / .___/\___/
+                                     /_/
+
+>> Runs on framework peace_rpc v0.1.0
+>> Starting service...
+2023-07-24T15:18:21.912105Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
 ```
 
 :::tip
@@ -537,7 +572,7 @@ and can be used to send messages directly to users of `bancho`, `lazer`, and `we
 :::
 
 ```bash title="Start chat service"
-cargo run --bin chat-server -- --peace-db-url sqlite://peace.db --rpc-reflection --rpc-admin-endpoints
+cargo run --bin chat-server -- --peace-db-url sqlite://peace.db --rpc-reflection --rpc-admin-endpoints --chat-save-dump --chat-load-dump
 ```
 
 Now we can see some information, which means the startup is successful:
@@ -559,11 +594,35 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
->> Runs on framework peace_rpc v0.1.0
+2023-07-24T15:19:16.783822Z  INFO peace_services::chat::services::chat: [ChatDump] Dump file not found, path: "./.service_dump/chat.dump"
+2023-07-24T15:19:16.784230Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
+2023-07-24T15:19:16.784312Z  INFO chat::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-07-24T15:19:16.784403Z  INFO chat::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
+2023-07-24T15:19:16.784460Z  INFO chat::background_tasks::channel_messages_recycling: Service started! (sleep=300s)
 
-2023-07-07T17:37:14.694919Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
-2023-07-07T17:37:14.697812Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5010
+
+    ____  _________   ____________
+   / __ \/ ____/   | / ____/ ____/  _________  _____
+  / /_/ / __/ / /| |/ /   / __/    / ___/ __ \/ ___/
+ / ____/ /___/ ___ / /___/ /___   / /  / /_/ / /__
+/_/   /_____/_/  |_\____/_____/  /_/  / .___/\___/
+                                     /_/
+
+>> Runs on framework peace_rpc v0.1.0
+>> Starting service...
+2023-07-24T15:19:16.786971Z  INFO peace_rpc::components::server: >> [gRPC SERVER] listening on: http://127.0.0.1:5012
 ```
+
+:::tip
+The `--chat-save-dump` parameter allows the Chat service to store
+the service instance in memory to the hard disk when it terminates.
+
+By passing the `--chat-load-dump` parameter at startup, the service can be restored to the state it was in when it was last closed,
+without losing user sessions, and users will not feel that the service has restarted.
+
+It is worth noting that the `--chat-dump-expries` parameter can control the expiration time (in seconds) of the snapshot.
+If the snapshot expires, it will not be loaded.
+:::
 
 **View all available flags:**
 
