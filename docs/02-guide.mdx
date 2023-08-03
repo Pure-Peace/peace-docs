@@ -399,7 +399,7 @@ Moreover, the server design of data and logic separation allows us to modify the
 multiplayer games, and data packets, and does not require a real "restart" of the entire server.
 
 ```bash title="Start bancho state server"
-cargo run --bin bancho-state-server -- --rpc-reflection --rpc-admin-endpoints --bancho-state-save-dump --bancho-state-load-dump
+cargo run --bin bancho-state-server -- --rpc-reflection --rpc-admin-endpoints --bancho-state-snapshot --bancho-state-load-snapshot
 ```
 
 Now we can see some information, which means the startup is successful:
@@ -423,7 +423,7 @@ Now we can see some information, which means the startup is successful:
 >> Runtime: single thread
 2023-07-24T15:17:54.155222Z  INFO peace_services::signature::services: initializing Signature service...
 2023-07-24T15:17:54.155685Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
-2023-07-24T15:17:54.155786Z  INFO peace_services::bancho_state::services::bancho_state: [BanchoStateDump] Dump file not found, path: "./.service_dump/bancho_state.dump"
+2023-07-24T15:17:54.155786Z  INFO peace_services::bancho_state::services::bancho_state: [BanchoStateSnapshot] Snapshot file not found, path: "./.snapshots/bancho_state.snapshot"
 2023-07-24T15:17:54.155910Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
 2023-07-24T15:17:54.156004Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
 
@@ -449,13 +449,13 @@ which is convenient for debugging and calling services.
 
 The `--rpc-admin-endpoints` flags will provide a set of RPC functions available to administrators (such as dynamically changing log levels, etc.).
 
-The `--bancho-state-save-dump` parameter allows the Bancho state service to store
+The `--bancho-state-snapshot` parameter allows the Bancho state service to store
 the service instance in memory to the hard disk when it terminates.
 
-By passing the `--bancho-state-load-dump` parameter at startup, the service can be restored to the state it was in when it was last closed,
+By passing the `--bancho-state-load-snapshot` parameter at startup, the service can be restored to the state it was in when it was last closed,
 without losing user sessions, and users will not feel that the service has restarted.
 
-It is worth noting that the `--bancho-state-dump-expries` parameter can control the expiration time (in seconds) of the snapshot.
+It is worth noting that the `--bancho-state-snapshot-expired-secs` parameter can control the expiration time (in seconds) of the snapshot.
 If the snapshot expires, it will not be loaded.
 :::
 
@@ -572,7 +572,7 @@ and can be used to send messages directly to users of `bancho`, `lazer`, and `we
 :::
 
 ```bash title="Start chat service"
-cargo run --bin chat-server -- --peace-db-url sqlite://peace.db --rpc-reflection --rpc-admin-endpoints --chat-save-dump --chat-load-dump
+cargo run --bin chat-server -- --peace-db-url sqlite://peace.db --rpc-reflection --rpc-admin-endpoints --chat-snapshot --chat-load-snapshot
 ```
 
 Now we can see some information, which means the startup is successful:
@@ -594,7 +594,7 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
-2023-07-24T15:19:16.783822Z  INFO peace_services::chat::services::chat: [ChatDump] Dump file not found, path: "./.service_dump/chat.dump"
+2023-07-24T15:19:16.783822Z  INFO peace_services::chat::services::chat: [ChatSnapshot] Snapshot file not found, path: "./.snapshots/chat.snapshot"
 2023-07-24T15:19:16.784230Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
 2023-07-24T15:19:16.784312Z  INFO chat::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
 2023-07-24T15:19:16.784403Z  INFO chat::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
@@ -614,13 +614,13 @@ Now we can see some information, which means the startup is successful:
 ```
 
 :::tip
-The `--chat-save-dump` parameter allows the Chat service to store
+The `--chat-snapshot` parameter allows the Chat service to store
 the service instance in memory to the hard disk when it terminates.
 
-By passing the `--chat-load-dump` parameter at startup, the service can be restored to the state it was in when it was last closed,
+By passing the `--chat-load-snapshot` parameter at startup, the service can be restored to the state it was in when it was last closed,
 without losing user sessions, and users will not feel that the service has restarted.
 
-It is worth noting that the `--chat-dump-expries` parameter can control the expiration time (in seconds) of the snapshot.
+It is worth noting that the `--chat-snapshot-expired-secs` parameter can control the expiration time (in seconds) of the snapshot.
 If the snapshot expires, it will not be loaded.
 :::
 
@@ -637,12 +637,13 @@ cargo run --bin chat-server -- --help
 If you wish to run a standalone instance, please refer to the following commands:
 
 ```bash title="Start bancho standalone server"
-cargo run --bin bancho-standalone-server -- --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url sqlite://peace.db
+cargo run --bin bancho-standalone-server -- --admin-endpoints --tls --ssl-cert=./cert.cer --ssl-key=./key.pem --peace-db-url sqlite://peace.db --chat-snapshot --chat-load-snapshot --bancho-state-snapshot --bancho-state-load-snapshot
 ```
 
 Now we can see some information, which means the startup is successful:
 
 ```bash
+
     ____  _________   ____________                      _           __
    / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
   / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
@@ -659,20 +660,34 @@ Now we can see some information, which means the startup is successful:
 
 >> Log level: Info (debug_mode: false)
 >> Runtime: single thread
->> Runs on framework peace_api v0.1.0
+2023-08-03T17:59:22.091560Z  INFO core_signature::signature: initializing Signature service...
+2023-08-03T17:59:22.092333Z  INFO core_signature::signature: Signature service init successful, type: "Local"
+2023-08-03T17:59:22.092460Z  INFO core_bancho_state::services::bancho_state: [BanchoStateSnapshot] Snapshot file not found, path: "./.snapshots/bancho_state.snapshot"
+2023-08-03T17:59:22.092585Z  INFO core_geoip::geoip: initializing Geoip service...
+2023-08-03T17:59:22.093154Z  INFO core_geoip::geoip: Geoip service init successful, type: "Local"
+2023-08-03T17:59:22.093250Z  INFO core_chat::services::chat: [ChatSnapshot] Snapshot file not found, path: "./.snapshots/chat.snapshot"
+2023-08-03T17:59:22.093540Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
+2023-08-03T17:59:22.093633Z  INFO chat::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-08-03T17:59:22.093711Z  INFO chat::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
+2023-08-03T17:59:22.093765Z  INFO chat::background_tasks::channel_messages_recycling: Service started! (sleep=300s)
+2023-08-03T17:59:22.093816Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
+2023-08-03T17:59:22.093889Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
+2023-08-03T17:59:22.093952Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
 
-2023-07-07T17:42:00.936528Z  INFO peace_services::signature::services: initializing Signature service...
-2023-07-07T17:42:00.937392Z  INFO peace_services::signature::services: Signature service init successful, type: "Local"
-2023-07-07T17:42:00.937629Z  INFO bancho_state::background_tasks::user_sessions_recycling: Service started! (deactive=180s, sleep=180s)
-2023-07-07T17:42:00.937842Z  INFO bancho_state::background_tasks::notify_messages_recycling: Service started! (sleep=300s)
-2023-07-07T17:42:00.938069Z  INFO peace_services::geoip::services: initializing Geoip service...
-2023-07-07T17:42:00.938639Z  INFO peace_services::geoip::services: Geoip service init successful, type: "Local"
-2023-07-07T17:42:00.938951Z  INFO chat::channel::initialize_public_channels: Public channels successfully initialized.
-2023-07-07T17:42:00.939127Z  INFO bancho::background_tasks::password_caches_recycling: Service started! (deactive=86400s, sleep=43200s)
-2023-07-07T17:42:00.940351Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
-2023-07-07T17:42:00.940514Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
-2023-07-07T17:42:00.940966Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
-2023-07-07T17:42:00.944202Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
+
+    ____  _________   ____________               _
+   / __ \/ ____/   | / ____/ ____/  ____ _____  (_)
+  / /_/ / __/ / /| |/ /   / __/    / __ `/ __ \/ /
+ / ____/ /___/ ___ / /___/ /___   / /_/ / /_/ / /
+/_/   /_____/_/  |_\____/_____/   \__,_/ .___/_/
+                                      /_/
+
+>> Runs on framework peace_api v0.1.0
+>> Starting service...
+2023-08-03T17:59:22.096400Z  INFO peace_api::components::http: >> [Swagger UI]: https://127.0.0.1:443/swagger-ui
+2023-08-03T17:59:22.096463Z  INFO peace_api::components::http: >> [openapi.json]: https://127.0.0.1:443/api-doc/openapi.json
+2023-08-03T17:59:22.096664Z  INFO peace_api::components::http: >> [HTTP SERVER] listening on: http://127.0.0.1:8000
+2023-08-03T17:59:22.098853Z  INFO peace_api::components::http::tls: >> [HTTPS SERVER] listening on: https://127.0.0.1:443
 ```
 
 **View all available flags:**

@@ -121,12 +121,8 @@ Options:
   -H, --http-addr <HTTP_ADDR>
           The address and port the `http` server listens on
 
-          [default: 127.0.0.1:8000]
-
   -S, --https-addr <HTTPS_ADDR>
           The address and port the `https` server listens on
-
-          [default: 127.0.0.1:443]
 
   -t, --tls
           Enabled `tls` support
@@ -369,8 +365,6 @@ Options:
 
   -H, --rpc-addr <RPC_ADDR>
           The address and port the `gRPC` server listens on
-
-          [default: 127.0.0.1:5010]
 
       --rpc-uds <RPC_UDS>
           Using unix domain socket instead of TCP/IP socket. Only for unix systems.
@@ -819,20 +813,20 @@ Options:
       --ed25519-private-key-path <ED25519_PRIVATE_KEY_PATH>
 
 
-      --bancho-state-dump-path <BANCHO_STATE_DUMP_PATH>
-          [default: ./.service_dump/bancho_state.dump]
+      --bancho-state-snapshot-path <BANCHO_STATE_SNAPSHOT_PATH>
+          [default: ./.snapshots/bancho_state.snapshot]
 
-      --bancho-state-dump-type <BANCHO_STATE_DUMP_TYPE>
+      --bancho-state-snapshot-type <BANCHO_STATE_SNAPSHOT_TYPE>
           [default: binary]
           [possible values: binary, json]
 
-      --bancho-state-save-dump
+      --bancho-state-snapshot
 
 
-      --bancho-state-load-dump
+      --bancho-state-load-snapshot
 
 
-      --bancho-state-dump-expries <BANCHO_STATE_DUMP_EXPRIES>
+      --bancho-state-snapshot-expired-secs <BANCHO_STATE_SNAPSHOT_EXPIRED_SECS>
           [default: 300]
 
   -h, --help
@@ -1106,20 +1100,20 @@ Options:
       --channel-messages-recycle-interval-secs <CHANNEL_MESSAGES_RECYCLE_INTERVAL_SECS>
           [default: 300]
 
-      --chat-dump-path <CHAT_DUMP_PATH>
-          [default: ./.service_dump/chat.dump]
+      --chat-snapshot-path <CHAT_SNAPSHOT_PATH>
+          [default: ./.snapshots/chat.snapshot]
 
-      --chat-dump-type <CHAT_DUMP_TYPE>
+      --chat-snapshot-type <CHAT_SNAPSHOT_TYPE>
           [default: binary]
           [possible values: binary, json]
 
-      --chat-save-dump
+      --chat-snapshot
 
 
-      --chat-load-dump
+      --chat-load-snapshot
 
 
-      --chat-dump-expries <CHAT_DUMP_EXPRIES>
+      --chat-snapshot-expired-secs <CHAT_SNAPSHOT_EXPIRED_SECS>
           [default: 300]
 
   -h, --help
@@ -1247,8 +1241,6 @@ Options:
 
   -H, --rpc-addr <RPC_ADDR>
           The address and port the `gRPC` server listens on
-
-          [default: 127.0.0.1:5010]
 
       --rpc-uds <RPC_UDS>
           Using unix domain socket instead of TCP/IP socket. Only for unix systems.
@@ -1470,8 +1462,6 @@ Options:
   -H, --rpc-addr <RPC_ADDR>
           The address and port the `gRPC` server listens on
 
-          [default: 127.0.0.1:5010]
-
       --rpc-uds <RPC_UDS>
           Using unix domain socket instead of TCP/IP socket. Only for unix systems.
 
@@ -1634,20 +1624,6 @@ cargo run --bin bancho-standalone-server -- --help
 ```
 
 ```bash
-    ____  _________   ____________                      _           __
-   / __ \/ ____/   | / ____/ ____/  ____  _________    (_)__  _____/ /_
-  / /_/ / __/ / /| |/ /   / __/    / __ \/ ___/ __ \  / / _ \/ ___/ __/
- / ____/ /___/ ___ / /___/ /___   / /_/ / /  / /_/ / / /  __/ /__/ /_
-/_/   /_____/_/  |_\____/_____/  / .___/_/   \____/_/ /\___/\___/\__/
-                                /_/              /___/
-
-
->> PEACE PROJECT @ 2023
->> Running bancho-standalone v0.1.0
-  | authors: Pure-Peace <purepeace_@outlook.com>
-  | git repository: https://github.com/pure-peace/peace
-  | docs website: https://peace.osu.icu/
-
 PEACE Bancho standalone (web) service
 
 Usage: bancho-standalone-server.exe [OPTIONS] [COMMAND]
@@ -1758,12 +1734,8 @@ Options:
   -H, --http-addr <HTTP_ADDR>
           The address and port the `http` server listens on
 
-          [default: 127.0.0.1:8000]
-
   -S, --https-addr <HTTPS_ADDR>
           The address and port the `https` server listens on
-
-          [default: 127.0.0.1:443]
 
   -t, --tls
           Enabled `tls` support
@@ -1866,13 +1838,13 @@ Options:
       --debug-endpoints
 
 
-      --user-sessions-recycle-deactive-secs <USER_SESSIONS_RECYCLE_DEACTIVE_SECS>
+      --bancho-user-sessions-recycle-deactive-secs <BANCHO_USER_SESSIONS_RECYCLE_DEACTIVE_SECS>
           [default: 180]
 
-      --user-sessions-recycle-interval-secs <USER_SESSIONS_RECYCLE_INTERVAL_SECS>
+      --bancho-user-sessions-recycle-interval-secs <BANCHO_USER_SESSIONS_RECYCLE_INTERVAL_SECS>
           [default: 180]
 
-      --notify-messages-recycle-interval-secs <NOTIFY_MESSAGES_RECYCLE_INTERVAL_SECS>
+      --bancho-notify-messages-recycle-interval-secs <BANCHO_NOTIFY_MESSAGES_RECYCLE_INTERVAL_SECS>
           [default: 300]
 
       --password-caches-recycle-deactive-secs <PASSWORD_CACHES_RECYCLE_DEACTIVE_SECS>
@@ -1880,6 +1852,18 @@ Options:
 
       --password-caches-recycle-interval-secs <PASSWORD_CACHES_RECYCLE_INTERVAL_SECS>
           [default: 43200]
+
+      --chat-user-sessions-recycle-deactive-secs <CHAT_USER_SESSIONS_RECYCLE_DEACTIVE_SECS>
+          [default: 180]
+
+      --chat-user-sessions-recycle-interval-secs <CHAT_USER_SESSIONS_RECYCLE_INTERVAL_SECS>
+          [default: 180]
+
+      --chat-notify-messages-recycle-interval-secs <CHAT_NOTIFY_MESSAGES_RECYCLE_INTERVAL_SECS>
+          [default: 300]
+
+      --channel-messages-recycle-interval-secs <CHANNEL_MESSAGES_RECYCLE_INTERVAL_SECS>
+          [default: 300]
 
       --geoip-uri <GEOIP_URI>
           Service uri
@@ -1924,6 +1908,38 @@ Options:
 
       --ed25519-private-key-path <ED25519_PRIVATE_KEY_PATH>
 
+
+      --chat-snapshot-path <CHAT_SNAPSHOT_PATH>
+          [default: ./.snapshots/chat.snapshot]
+
+      --chat-snapshot-type <CHAT_SNAPSHOT_TYPE>
+          [default: binary]
+          [possible values: binary, json]
+
+      --chat-snapshot
+
+
+      --chat-load-snapshot
+
+
+      --chat-snapshot-expired-secs <CHAT_SNAPSHOT_EXPIRED_SECS>
+          [default: 300]
+
+      --bancho-state-snapshot-path <BANCHO_STATE_SNAPSHOT_PATH>
+          [default: ./.snapshots/bancho_state.snapshot]
+
+      --bancho-state-snapshot-type <BANCHO_STATE_SNAPSHOT_TYPE>
+          [default: binary]
+          [possible values: binary, json]
+
+      --bancho-state-snapshot
+
+
+      --bancho-state-load-snapshot
+
+
+      --bancho-state-snapshot-expired-secs <BANCHO_STATE_SNAPSHOT_EXPIRED_SECS>
+          [default: 300]
 
   -h, --help
           Print help (see a summary with '-h')
